@@ -1,0 +1,62 @@
+name: Build Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore .\FolderGate.sln
+
+      - name: Build
+        run: dotnet build .\FolderGate.sln -c Release --no-restore
+
+      - name: Test without elevation-required tests
+        run: dotnet test .\FolderGate.sln -c Release --no-build --filter "TestCategory!=RequiresElevation"
+
+      - name: Publish app
+        run: dotnet publish .\src\FolderGate.App\FolderGate.App.csproj -c Release -r win-x64 --self-contained false -o .\artifacts\publish --no-restore
+
+      - name: Publish elevated helper
+        run: dotnet publish .\src\FolderGate.ElevatedHelper\FolderGate.ElevatedHelper.csproj -c Release -r win-x64 --self-contained false -o .\artifacts\publish --no-restore
+
+      - name: Publish recovery tool
+        run: dotnet publish .\src\FolderGate.RecoveryTool\FolderGate.RecoveryTool.csproj -c Release -r win-x64 --self-contained false -o .\artifacts\publish --no-restore
+
+      - name: Create Korean executable aliases
+        shell: pwsh
+        run: |
+          Copy-Item .\artifacts\publish\FolderGate.App.exe .\artifacts\publish\이은성폴더잠금기.exe -Force
+          Copy-Item .\artifacts\publish\FolderGate.ElevatedHelper.exe .\artifacts\publish\이은성폴더잠금기_권한도우미.exe -Force
+          Copy-Item .\artifacts\publish\FolderGate.RecoveryTool.exe .\artifacts\publish\이은성폴더잠금기_복구도구.exe -Force
+
+      - name: Package release zip
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path .\artifacts\release -Force | Out-Null
+          Compress-Archive -Path .\artifacts\publish\* -DestinationPath .\artifacts\release\이은성폴더잠금기-${{ github.ref_name }}-win-x64.zip -Force
+
+      - name: Create GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" ".\artifacts\release\이은성폴더잠금기-${{ github.ref_name }}-win-x64.zip" `
+            --title "이은성폴더잠금기 ${{ github.ref_name }}" `
+            --notes "초기 공개 릴리스입니다. 압축을 풀고 이은성폴더잠금기.exe를 실행하세요. Windows에서 .NET 8 Desktop Runtime이 필요할 수 있습니다."

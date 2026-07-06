@@ -1,0 +1,31 @@
+# User data and runtime state
+data/
+release/
+*.log
+*.jsonl
+
+# Build outputs
+bin/
+obj/
+**/bin/
+**/obj/
+
+# Test outputs
+TestResults/
+tests/**/TestRuns/
+tests/**/*.log
+
+# Local SDK/cache
+build/.dotnet/
+
+# IDE and OS files
+.vs/
+.vscode/
+*.user
+*.suo
+Desktop.ini
+Thumbs.db
+
+# NuGet/cache artifacts
+*.nupkg
+packages/

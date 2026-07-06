@@ -1,0 +1,270 @@
+<Window x:Class="FolderGate.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="이은성폴더잠금기"
+        Icon="pack://application:,,,/FolderGate.App;component/assets/icons/EunsungFolderLock.ico"
+        MinHeight="640"
+        MinWidth="980"
+        Height="700"
+        Width="1080">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="12,7" />
+            <Setter Property="Margin" Value="0,0,8,8" />
+            <Setter Property="MinHeight" Value="34" />
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Margin="0,0,0,16">
+            <StackPanel DockPanel.Dock="Left">
+                <TextBlock Text="이은성폴더잠금기"
+                           FontSize="26"
+                           FontWeight="SemiBold" />
+                <TextBlock Text="일반적인 파일 탐색기 접근 차단용 NTFS 폴더 잠금 도구"
+                           Foreground="#555"
+                           Margin="0,4,0,0" />
+            </StackPanel>
+            <TextBlock DockPanel.Dock="Right"
+                       Text="{Binding StatusMessage}"
+                       Foreground="#245a9a"
+                       FontWeight="SemiBold"
+                       HorizontalAlignment="Right" />
+        </DockPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="18" />
+                <ColumnDefinition Width="1.15*" />
+            </Grid.ColumnDefinitions>
+
+            <DockPanel Grid.Column="0">
+                <TextBlock DockPanel.Dock="Top"
+                           Text="등록된 잠금 폴더"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,8" />
+                <DataGrid ItemsSource="{Binding Folders}"
+                          SelectedItem="{Binding SelectedFolder, Mode=TwoWay}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          IsReadOnly="True"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="이름"
+                                            Binding="{Binding DisplayName}"
+                                            Width="150" />
+                        <DataGridTextColumn Header="상태"
+                                            Binding="{Binding StateText}"
+                                            Width="92" />
+                        <DataGridTextColumn Header="모드"
+                                            Binding="{Binding ModeText}"
+                                            Width="100" />
+                        <DataGridTextColumn Header="등록 경로"
+                                            Binding="{Binding Path}"
+                                            Width="*" />
+                        <DataGridTextColumn Header="마지막 작업"
+                                            Binding="{Binding LastOperationText}"
+                                            Width="145" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="작업"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,8" />
+
+                <WrapPanel Grid.Row="1"
+                           Margin="0,0,0,10">
+                    <Button Content="폴더 추가"
+                            Command="{Binding AddFolderCommand}" />
+                    <Button Content="폴더 제거"
+                            Command="{Binding RemoveFolderCommand}" />
+                    <Button Content="잠금"
+                            Command="{Binding LockCommand}" />
+                    <Button Content="잠금 해제"
+                            Command="{Binding UnlockCommand}" />
+                    <Button Content="로그 보기"
+                            Command="{Binding ShowLogsCommand}" />
+                    <Button Content="비밀번호 변경"
+                            Command="{Binding ChangePasswordCommand}" />
+                    <Button Content="복구 도구 열기"
+                            Command="{Binding OpenRecoveryToolCommand}" />
+                    <Button Content="취소"
+                            Command="{Binding CancelOperationCommand}" />
+                </WrapPanel>
+
+                <GroupBox Grid.Row="2"
+                          Header="진행 상태"
+                          Padding="12"
+                          Margin="0,0,0,12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="88" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="단계" FontWeight="SemiBold" />
+                        <TextBlock Grid.Column="1" Text="{Binding OperationPhase}" />
+
+                        <TextBlock Grid.Row="1"
+                                   Text="항목"
+                                   FontWeight="SemiBold"
+                                   Margin="0,8,0,0" />
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="1"
+                                   Margin="0,8,0,0">
+                            <Run Text="{Binding OperationCompleted}" />
+                            <Run Text=" / " />
+                            <Run Text="{Binding OperationTotal}" />
+                            <Run Text="  실패 " />
+                            <Run Text="{Binding OperationFailed}" />
+                        </TextBlock>
+
+                        <TextBlock Grid.Row="2"
+                                   Text="시간"
+                                   FontWeight="SemiBold"
+                                   Margin="0,8,0,0" />
+                        <TextBlock Grid.Row="2"
+                                   Grid.Column="1"
+                                   Margin="0,8,0,0">
+                            <Run Text="경과 " />
+                            <Run Text="{Binding OperationElapsed}" />
+                            <Run Text="  남은 시간 " />
+                            <Run Text="{Binding OperationEta}" />
+                        </TextBlock>
+
+                        <TextBlock Grid.Row="3"
+                                   Text="현재 경로"
+                                   FontWeight="SemiBold"
+                                   Margin="0,8,0,0" />
+                        <TextBlock Grid.Row="3"
+                                   Grid.Column="1"
+                                   Text="{Binding OperationCurrentPath}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,8,0,0" />
+                    </Grid>
+                </GroupBox>
+
+                <GroupBox Grid.Row="3"
+                          Header="잠금 모드"
+                          Padding="12"
+                          Margin="0,0,0,12">
+                    <StackPanel>
+                        <RadioButton Content="빠른 모드"
+                                     IsChecked="{Binding IsQuickMode, Mode=TwoWay}"
+                                     Margin="0,0,0,8" />
+                        <TextBlock Text="선택한 폴더 루트만 처리합니다. 파일 크기와 거의 무관하게 빠릅니다."
+                                   Foreground="#555"
+                                   TextWrapping="Wrap"
+                                   Margin="22,0,0,10" />
+                        <RadioButton Content="강화 모드"
+                                     IsChecked="{Binding IsHardenedMode, Mode=TwoWay}"
+                                     Margin="0,0,0,8" />
+                        <TextBlock Text="하위 파일과 폴더의 ACL을 재귀 처리합니다. 파일·폴더 개수에 따라 시간이 달라집니다."
+                                   Foreground="#555"
+                                   TextWrapping="Wrap"
+                                   Margin="22,0,0,0" />
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Grid.Row="4"
+                          Header="선택한 폴더"
+                          Padding="12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="105" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="현재 상태" FontWeight="SemiBold" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding SelectedState}" />
+
+                        <TextBlock Grid.Row="1"
+                                   Text="등록 경로"
+                                   FontWeight="SemiBold"
+                                   Margin="0,10,0,0" />
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="1"
+                                   Text="{Binding SelectedPath}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,10,0,0" />
+
+                        <TextBlock Grid.Row="2"
+                                   Text="마지막 시간"
+                                   FontWeight="SemiBold"
+                                   Margin="0,10,0,0" />
+                        <TextBlock Grid.Row="2"
+                                   Grid.Column="1"
+                                   Text="{Binding SelectedLastOperation}"
+                                   Margin="0,10,0,0" />
+
+                        <TextBlock Grid.Row="3"
+                                   Text="마지막 결과"
+                                   FontWeight="SemiBold"
+                                   Margin="0,10,0,0" />
+                        <TextBlock Grid.Row="3"
+                                   Grid.Column="1"
+                                   Text="{Binding SelectedLastResult}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,10,0,0" />
+
+                        <TextBlock Grid.Row="4"
+                                   Grid.ColumnSpan="2"
+                                   Text="이 프로그램은 파일 내용을 암호화하거나 이동하지 않습니다. 빠른 모드는 파일 크기와 무관하게 빠르게 처리되며, 강화 모드는 파일·폴더 개수에 따라 시간이 달라질 수 있습니다. 관리자 권한이나 ACL 지식이 있는 사용자는 우회할 수 있습니다."
+                                   TextWrapping="Wrap"
+                                   Foreground="#444"
+                                   Margin="0,18,0,0" />
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </Grid>
+
+        <ProgressBar Grid.Row="2"
+                     Height="4"
+                     Minimum="0"
+                     Maximum="100"
+                     Value="{Binding OperationProgressPercent}"
+                     IsIndeterminate="{Binding IsProgressIndeterminate}"
+                     Margin="0,16,0,0" />
+    </Grid>
+</Window>

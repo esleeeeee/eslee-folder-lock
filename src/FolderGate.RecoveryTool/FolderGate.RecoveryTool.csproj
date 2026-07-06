@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\FolderGate.Core\FolderGate.Core.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon>..\..\assets\icons\EunsungFolderLock.ico</ApplicationIcon>
+    <Title>이은성폴더잠금기 복구 도구</Title>
+    <Product>이은성폴더잠금기</Product>
+    <Description>이은성폴더잠금기 복구 도구</Description>
+    <AssemblyTitle>이은성폴더잠금기 복구 도구</AssemblyTitle>
+  </PropertyGroup>
+
+</Project>
