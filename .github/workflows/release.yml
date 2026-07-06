@@ -61,11 +61,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          try {
-            gh release delete-asset "${{ github.ref_name }}" "-${{ github.ref_name }}-win-x64.zip" -y
-          }
-          catch {
+          gh release delete-asset "${{ github.ref_name }}" "-${{ github.ref_name }}-win-x64.zip" -y 2>$null
+          if ($LASTEXITCODE -ne 0) {
             Write-Host "No malformed legacy asset to delete."
+            exit 0
           }
 
       - name: Create GitHub release
