@@ -53,13 +53,41 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path .\artifacts\release -Force | Out-Null
-          Compress-Archive -Path .\artifacts\publish\* -DestinationPath .\artifacts\release\이은성폴더잠금기-${{ github.ref_name }}-win-x64.zip -Force
+          $assetName = "EunsungFolderLock-${{ github.ref_name }}-win-x64.zip"
+          Compress-Archive -Path .\artifacts\publish\* -DestinationPath ".\artifacts\release\$assetName" -Force
 
       - name: Create GitHub release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${{ github.ref_name }}" ".\artifacts\release\이은성폴더잠금기-${{ github.ref_name }}-win-x64.zip" `
-            --title "이은성폴더잠금기 ${{ github.ref_name }}" `
-            --notes "초기 공개 릴리스입니다. 압축을 풀고 이은성폴더잠금기.exe를 실행하세요. Windows에서 .NET 8 Desktop Runtime이 필요할 수 있습니다."
+          $ErrorActionPreference = "Stop"
+          $tag = "${{ github.ref_name }}"
+          $assetName = "EunsungFolderLock-$tag-win-x64.zip"
+          $assetPath = ".\artifacts\release\$assetName"
+          $releaseTitle = "이은성폴더잠금기 $tag"
+          $releaseNotes = "초기 공개 릴리스입니다. 압축을 풀고 이은성폴더잠금기.exe를 실행하세요. Windows에서 .NET 8 Desktop Runtime이 필요할 수 있습니다."
+          $releaseExists = $false
+
+          try {
+            gh release view $tag | Out-Null
+            $releaseExists = $true
+          }
+          catch {
+            $releaseExists = $false
+          }
+
+          if ($releaseExists) {
+            try {
+              gh release delete-asset $tag "-$tag-win-x64.zip" -y
+            }
+            catch {
+              Write-Host "No legacy asset to delete."
+            }
+
+            gh release upload $tag $assetPath --clobber
+            gh release edit $tag --title $releaseTitle --notes $releaseNotes
+          }
+          else {
+            gh release create $tag $assetPath --title $releaseTitle --notes $releaseNotes
+          }
