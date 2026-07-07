@@ -59,7 +59,7 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          name: 이은성폴더잠금기 ${{ github.ref_name }}
+          name: eslee-folder-lock ${{ github.ref_name }}
           body_path: .github/release-notes/${{ github.ref_name }}.md
           files: .\artifacts\release\eslee-folder-lock-${{ github.ref_name }}-win-x64.zip
           make_latest: true
