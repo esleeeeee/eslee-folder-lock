@@ -1,12 +1,12 @@
-# Eunsung Folder Lock
+# eslee folder lock
 
-Eunsung Folder Lock is a Windows 11 desktop utility for restricting casual access to selected folders by changing NTFS permissions. It is built on the internal FolderGate engine and is designed for local, personal use cases where the goal is to prevent ordinary File Explorer access rather than provide cryptographic data protection.
+eslee folder lock is a Windows 11 desktop utility for restricting casual access to selected folders by changing NTFS permissions. It is built on the internal FolderGate engine and is designed for local, personal use cases where the goal is to prevent ordinary File Explorer access rather than provide cryptographic data protection.
 
 This project was implemented entirely through vibe coding: the product direction, behavior, UI, tests, recovery flow, release packaging, and documentation were iterated through natural-language collaboration with an AI coding agent.
 
 ## What It Does
 
-Eunsung Folder Lock lets a user register local NTFS folders and apply an access-deny lock to them. Once locked, a normal user session should fail common file operations such as opening the folder, listing contents, reading files, writing files, creating new files or directories, renaming files, deleting files, and copying external files into the locked target.
+eslee folder lock lets a user register local NTFS folders and apply an access-deny lock to them. Once locked, a normal user session should fail common file operations such as opening the folder, listing contents, reading files, writing files, creating new files or directories, renaming files, deleting files, and copying external files into the locked target.
 
 The application is intended for practical local access control. It does not encrypt files, hide files at the kernel level, or transform file contents. The folder and file data remain on disk exactly where they are.
 
@@ -93,7 +93,7 @@ tools/
   Icon generation script
 ```
 
-The public product name is Eunsung Folder Lock / 이은성폴더잠금기. Internal project names and namespaces still use `FolderGate` for compatibility.
+The public English product name is eslee folder lock. The Korean product name is 이은성폴더잠금기. Internal project names and namespaces still use `FolderGate` for compatibility.
 
 ## Build
 
@@ -150,7 +150,7 @@ Windows may require the .NET 8 Desktop Runtime if it is not already installed.
 The application icon is generated from the root PNG source and stored under `assets/icons`.
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\Generate-EunsungFolderLockIcon.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\Generate-EsleeFolderLockIcon.ps1
 ```
 
 Generated outputs include PNG sizes from 16px through 256px and a multi-size Windows `.ico` file.
@@ -309,7 +309,7 @@ Windows에 .NET 8 Desktop Runtime이 없으면 실행 전에 설치가 필요할
 앱 아이콘은 프로젝트 루트의 PNG 원본을 기반으로 생성하며, 결과물은 `assets/icons` 아래에 저장합니다.
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\Generate-EunsungFolderLockIcon.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\Generate-EsleeFolderLockIcon.ps1
 ```
 
 16px부터 256px까지의 PNG 파일과 Windows용 멀티사이즈 `.ico` 파일이 생성됩니다.

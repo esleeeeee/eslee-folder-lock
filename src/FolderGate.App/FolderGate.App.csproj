@@ -10,7 +10,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>..\..\assets\icons\EunsungFolderLock.ico</ApplicationIcon>
+    <ApplicationIcon>..\..\assets\icons\EsleeFolderLock.ico</ApplicationIcon>
     <Title>이은성폴더잠금기</Title>
     <Product>이은성폴더잠금기</Product>
     <Description>이은성폴더잠금기</Description>
@@ -18,8 +18,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Resource Include="..\..\assets\icons\EunsungFolderLock.ico">
-      <Link>assets\icons\EunsungFolderLock.ico</Link>
+    <Resource Include="..\..\assets\icons\EsleeFolderLock.ico">
+      <Link>assets\icons\EsleeFolderLock.ico</Link>
     </Resource>
   </ItemGroup>
 

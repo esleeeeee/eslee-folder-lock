@@ -53,7 +53,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path .\artifacts\release -Force | Out-Null
-          $assetName = "EunsungFolderLock-${{ github.ref_name }}-win-x64.zip"
+          $assetName = "eslee-folder-lock-${{ github.ref_name }}-win-x64.zip"
           Compress-Archive -Path .\artifacts\publish\* -DestinationPath ".\artifacts\release\$assetName" -Force
 
       - name: Create GitHub release
@@ -65,5 +65,5 @@ jobs:
 
             압축을 풀고 이은성폴더잠금기.exe를 실행하세요.
             Windows에서 .NET 8 Desktop Runtime이 필요할 수 있습니다.
-          files: .\artifacts\release\EunsungFolderLock-${{ github.ref_name }}-win-x64.zip
+          files: .\artifacts\release\eslee-folder-lock-${{ github.ref_name }}-win-x64.zip
           make_latest: true

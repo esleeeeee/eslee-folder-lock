@@ -21,7 +21,7 @@ if (-not (Test-Path -LiteralPath $SourcePath)) {
 
 New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
 
-$sourceCopy = Join-Path $OutputDirectory "EunsungFolderLock-source.png"
+$sourceCopy = Join-Path $OutputDirectory "EsleeFolderLock-source.png"
 Copy-Item -LiteralPath $SourcePath -Destination $sourceCopy -Force
 
 Add-Type -AssemblyName System.Drawing
@@ -66,7 +66,7 @@ try {
                 $graphics.Dispose()
             }
 
-            $pngPath = Join-Path $OutputDirectory "EunsungFolderLock-$size.png"
+            $pngPath = Join-Path $OutputDirectory "EsleeFolderLock-$size.png"
             $bitmap.Save($pngPath, [System.Drawing.Imaging.ImageFormat]::Png)
             $pngFrames.Add([pscustomobject]@{
                 Size = $size
@@ -83,7 +83,7 @@ finally {
     $sourceImage.Dispose()
 }
 
-$icoPath = Join-Path $OutputDirectory "EunsungFolderLock.ico"
+$icoPath = Join-Path $OutputDirectory "EsleeFolderLock.ico"
 $stream = [System.IO.File]::Create($icoPath)
 try {
     $writer = New-Object System.IO.BinaryWriter($stream)

@@ -9,7 +9,7 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <ApplicationIcon>..\..\assets\icons\EunsungFolderLock.ico</ApplicationIcon>
+    <ApplicationIcon>..\..\assets\icons\EsleeFolderLock.ico</ApplicationIcon>
     <Title>이은성폴더잠금기 권한 도우미</Title>
     <Product>이은성폴더잠금기</Product>
     <Description>이은성폴더잠금기 권한 도우미</Description>
