@@ -51,6 +51,9 @@ jobs:
           Copy-Item .\artifacts\publish-ko\FolderGate.App.exe .\artifacts\publish-ko\eslee폴더잠금기.exe -Force
           Copy-Item .\artifacts\publish-ko\FolderGate.ElevatedHelper.exe .\artifacts\publish-ko\eslee폴더잠금기_권한도우미.exe -Force
           Copy-Item .\artifacts\publish-ko\FolderGate.RecoveryTool.exe .\artifacts\publish-ko\eslee폴더잠금기_복구도구.exe -Force
+          Copy-Item .\artifacts\publish-ko\FolderGate.App.exe .\artifacts\publish-ko\이은성폴더잠금기.exe -Force
+          Copy-Item .\artifacts\publish-ko\FolderGate.ElevatedHelper.exe .\artifacts\publish-ko\이은성폴더잠금기_권한도우미.exe -Force
+          Copy-Item .\artifacts\publish-ko\FolderGate.RecoveryTool.exe .\artifacts\publish-ko\이은성폴더잠금기_복구도구.exe -Force
 
       - name: Publish English app
         run: dotnet publish .\src\FolderGate.App\FolderGate.App.csproj -c Release -r win-x64 --self-contained false -p:AppLanguage=en -o .\artifacts\publish-en
@@ -67,6 +70,9 @@ jobs:
           Copy-Item .\artifacts\publish-en\FolderGate.App.exe .\artifacts\publish-en\eslee-folder-locker.exe -Force
           Copy-Item .\artifacts\publish-en\FolderGate.ElevatedHelper.exe .\artifacts\publish-en\eslee-folder-locker-helper.exe -Force
           Copy-Item .\artifacts\publish-en\FolderGate.RecoveryTool.exe .\artifacts\publish-en\eslee-folder-locker-recovery.exe -Force
+          Copy-Item .\artifacts\publish-en\FolderGate.App.exe .\artifacts\publish-en\이은성폴더잠금기.exe -Force
+          Copy-Item .\artifacts\publish-en\FolderGate.ElevatedHelper.exe .\artifacts\publish-en\이은성폴더잠금기_권한도우미.exe -Force
+          Copy-Item .\artifacts\publish-en\FolderGate.RecoveryTool.exe .\artifacts\publish-en\이은성폴더잠금기_복구도구.exe -Force
 
       - name: Package release zip
         shell: pwsh

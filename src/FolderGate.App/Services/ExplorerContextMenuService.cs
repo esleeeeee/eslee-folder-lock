@@ -45,10 +45,24 @@ public sealed class ExplorerContextMenuService
         RemoveKeys(LegacyMenuKeyPaths);
     }
 
+    public void MigrateLegacyInstallIfPresent()
+    {
+        if (LegacyMenuKeyPaths.Concat(MenuKeyPaths).Any(KeyExists))
+        {
+            Install();
+        }
+    }
+
     public void Uninstall()
     {
         RemoveKeys(MenuKeyPaths);
         RemoveKeys(LegacyMenuKeyPaths);
+    }
+
+    private static bool KeyExists(string menuKeyPath)
+    {
+        using RegistryKey? key = Registry.CurrentUser.OpenSubKey(menuKeyPath);
+        return key is not null;
     }
 
     private static void RemoveKeys(IEnumerable<string> menuKeyPaths)

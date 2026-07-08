@@ -24,6 +24,7 @@ public partial class App : System.Windows.Application
         }
 
         AppPaths paths = AppPaths.Resolve(arguments.RootPath);
+        TryMigrateExplorerContextMenu(paths);
         if (arguments.ResumeTemporaryUnlocks)
         {
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
@@ -42,5 +43,18 @@ public partial class App : System.Windows.Application
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
         int exitCode = await new UnlockPromptRunner(paths).RunAsync(arguments.UnlockPath).ConfigureAwait(true);
         Shutdown(exitCode);
+    }
+
+    private static void TryMigrateExplorerContextMenu(AppPaths paths)
+    {
+        try
+        {
+            ToolLocator toolLocator = new(paths);
+            new ExplorerContextMenuService(paths, toolLocator).MigrateLegacyInstallIfPresent();
+        }
+        catch
+        {
+            // Best-effort migration only. Normal app startup and unlock flow should continue.
+        }
     }
 }

@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.1.1
+
+### English
+
+- Fixed stale File Explorer context-menu registrations left from the previous Korean product name.
+- Existing `eslee-folder-lock` / `이은성폴더잠금기` menu keys are now migrated to the current `eslee-folder-locker` registration on app startup.
+- Existing current-menu registrations are refreshed to the app path that is actually being run, which prevents broken commands after moving or replacing the release folder.
+- Added temporary legacy executable aliases to release packages for upgrade compatibility.
+
+### Korean
+
+- 이전 한글 제품명 시절에 남은 File Explorer 우클릭 메뉴 등록 문제를 수정했습니다.
+- 기존 `eslee-folder-lock` / `이은성폴더잠금기` 메뉴 키는 앱 시작 시 현재 `eslee-folder-locker` 등록으로 자동 이전됩니다.
+- 이미 등록된 현재 메뉴도 실제 실행 중인 앱 경로로 다시 갱신해, release 폴더 이동/교체 후 “응용 프로그램을 찾을 수 없음” 오류가 나지 않도록 했습니다.
+- 업그레이드 호환성을 위해 릴리즈 패키지에 임시 구버전 실행 파일 alias를 포함했습니다.
+
 ## v1.1.0
 
 ### English
