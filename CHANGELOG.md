@@ -1,5 +1,25 @@
 # Changelog
 
+## v1.1.0
+
+### English
+
+- Renamed the public product to `eslee폴더잠금기` and standardized the English name as `eslee folder locker`.
+- Renamed repository/release naming to `eslee-folder-locker`.
+- Replaced the previous icon set with the new `eslee-folder-lock.png` based icon assets.
+- Added separate Korean and English release packages.
+- Added build-time localization through `AppLanguage=ko|en` for UI, dialogs, helper console text, recovery tool text, progress messages, and validation messages.
+- Updated File Explorer context-menu command naming and release package aliases.
+
+### Korean
+
+- 사용자 표시 제품명을 `eslee폴더잠금기`로 변경하고 영문 이름을 `eslee folder locker`로 통일했습니다.
+- 저장소/릴리즈 표기를 `eslee-folder-locker`로 변경했습니다.
+- 기존 아이콘 세트를 제거하고 새 `eslee-folder-lock.png` 기반 아이콘 자산을 적용했습니다.
+- 한국어/영어 릴리즈 패키지를 분리했습니다.
+- `AppLanguage=ko|en` 빌드 속성으로 UI, 대화상자, 권한 도우미 콘솔, 복구 도구, 진행 메시지, 검증 메시지를 언어별로 제공합니다.
+- File Explorer 우클릭 메뉴 명칭과 릴리즈 실행 파일 별칭을 갱신했습니다.
+
 ## v1.0.3
 
 ### English

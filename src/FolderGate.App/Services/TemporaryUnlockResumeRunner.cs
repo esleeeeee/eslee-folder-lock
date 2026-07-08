@@ -1,4 +1,5 @@
 using System.Threading;
+using FolderGate.Core.Localization;
 using FolderGate.Core.Models;
 using FolderGate.Core.Storage;
 
@@ -6,7 +7,7 @@ namespace FolderGate.App.Services;
 
 public sealed class TemporaryUnlockResumeRunner
 {
-    private const string MutexName = @"Local\eslee-folder-lock-temporary-resume";
+    private const string MutexName = @"Local\eslee-folder-locker-temporary-resume";
 
     private readonly ConfigStore _configStore;
     private readonly ElevatedToolRunner _toolRunner;
@@ -58,7 +59,7 @@ public sealed class TemporaryUnlockResumeRunner
                     int exitCode = await _toolRunner.RunHelperAsync("lock", due, operationId, due.Mode).ConfigureAwait(true);
                     if (exitCode != 0)
                     {
-                        MarkAutoRelockFailure(due.Id, $"권한 도우미 종료 코드 {exitCode}");
+                        MarkAutoRelockFailure(due.Id, $"{AppText.HelperExitCodePrefix} {exitCode}");
                         return exitCode;
                     }
                 }
@@ -94,7 +95,7 @@ public sealed class TemporaryUnlockResumeRunner
         }
 
         folder.LastOperationUtc = DateTimeOffset.UtcNow;
-        folder.LastResult = $"자동 재잠금 실패: {message}";
+        folder.LastResult = $"{AppText.AutoRelockFailedPrefix}: {message}";
         _configStore.Save(config);
     }
 }

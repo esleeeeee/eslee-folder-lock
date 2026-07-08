@@ -1,4 +1,5 @@
 using System.IO;
+using FolderGate.Core.Localization;
 using FolderGate.Core.Storage;
 
 namespace FolderGate.App.Services;
@@ -7,9 +8,21 @@ public sealed class ToolLocator
 {
     private static readonly IReadOnlyDictionary<string, string[]> DisplayExecutableNames = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
     {
-        ["FolderGate.App"] = ["이은성폴더잠금기.exe"],
-        ["FolderGate.ElevatedHelper"] = ["이은성폴더잠금기_권한도우미.exe"],
-        ["FolderGate.RecoveryTool"] = ["이은성폴더잠금기_복구도구.exe"]
+        ["FolderGate.App"] =
+        [
+            AppText.LanguageCode == "en" ? "eslee-folder-locker.exe" : "eslee폴더잠금기.exe",
+            "이은성폴더잠금기.exe"
+        ],
+        ["FolderGate.ElevatedHelper"] =
+        [
+            AppText.LanguageCode == "en" ? "eslee-folder-locker-helper.exe" : "eslee폴더잠금기_권한도우미.exe",
+            "이은성폴더잠금기_권한도우미.exe"
+        ],
+        ["FolderGate.RecoveryTool"] =
+        [
+            AppText.LanguageCode == "en" ? "eslee-folder-locker-recovery.exe" : "eslee폴더잠금기_복구도구.exe",
+            "이은성폴더잠금기_복구도구.exe"
+        ]
     };
 
     private readonly AppPaths _paths;
@@ -39,7 +52,11 @@ public sealed class ToolLocator
         string? match = candidates.FirstOrDefault(File.Exists);
         if (match is null)
         {
-            throw new FileNotFoundException($"{projectName} 실행 파일을 찾을 수 없습니다. 먼저 솔루션을 빌드하거나 release 폴더를 다시 생성하세요.", internalExeName);
+            throw new FileNotFoundException(
+                AppText.LanguageCode == "en"
+                    ? $"{projectName} executable was not found. Build the solution first, or regenerate the release folder."
+                    : $"{projectName} 실행 파일을 찾을 수 없습니다. 먼저 솔루션을 빌드하거나 release 폴더를 다시 생성하세요.",
+                internalExeName);
         }
 
         return match;

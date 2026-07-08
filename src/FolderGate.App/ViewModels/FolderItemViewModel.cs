@@ -1,4 +1,5 @@
 using FolderGate.Core.Formatting;
+using FolderGate.Core.Localization;
 using FolderGate.Core.Models;
 
 namespace FolderGate.App.ViewModels;
@@ -18,16 +19,9 @@ public sealed class FolderItemViewModel
 
     public string Path => Model.Path;
 
-    public string ModeText => Model.Mode == LockMode.Quick ? "빠른 모드" : "강화 모드";
+    public string ModeText => AppText.ModeName(Model.Mode);
 
-    public string StateText => Model.State switch
-    {
-        FolderLockState.Locked => "잠김",
-        FolderLockState.TemporarilyUnlocked => "임시 해제",
-        FolderLockState.Working => "작업 중",
-        FolderLockState.RecoveryRequired => "복구 필요",
-        _ => "해제됨"
-    };
+    public string StateText => AppText.StateName(Model.State);
 
     public string LastOperationText => Model.LastOperationUtc is null
         ? "-"
@@ -35,5 +29,5 @@ public sealed class FolderItemViewModel
 
     public string LastResult => string.IsNullOrWhiteSpace(Model.LastResult) ? "-" : Model.LastResult;
 
-    public string WarningText => Model.HasReparsePointWarning ? "재분석 지점 있음" : string.Empty;
+    public string WarningText => Model.HasReparsePointWarning ? AppText.ReparsePointShort : string.Empty;
 }

@@ -1,6 +1,6 @@
-# 이은성폴더잠금기 ACL Design
+# eslee폴더잠금기 ACL Design
 
-이은성폴더잠금기(FolderGate 엔진)는 `System.Security.AccessControl` API를 사용하며 잠금 메커니즘으로 항목마다 `icacls /deny`를 실행하지 않습니다.
+eslee폴더잠금기(FolderGate 엔진)는 `System.Security.AccessControl` API를 사용하며 잠금 메커니즘으로 항목마다 `icacls /deny`를 실행하지 않습니다.
 
 강화 모드는 승격된 도우미 프로세스 하나에서 실행됩니다. 파일마다 `icacls`, PowerShell, `cmd`를 새로 실행하지 않고 `Directory.EnumerateDirectories`와 `Directory.EnumerateFiles`로 순회합니다.
 

@@ -1,4 +1,5 @@
 using FolderGate.Core.Acl;
+using FolderGate.Core.Localization;
 
 namespace FolderGate.Core.Storage;
 
@@ -32,7 +33,7 @@ public sealed class OperationProgressReporter : IProgress<AclOperationProgress>,
             Operation = operation,
             StartedUtc = DateTimeOffset.UtcNow,
             UpdatedUtc = DateTimeOffset.UtcNow,
-            Message = "작업을 시작합니다."
+            Message = AppText.OperationStarted
         };
         ForceSave();
     }
@@ -66,7 +67,7 @@ public sealed class OperationProgressReporter : IProgress<AclOperationProgress>,
         {
             _snapshot.IsCancellationRequested = true;
             _snapshot.UpdatedUtc = DateTimeOffset.UtcNow;
-            _snapshot.Message = "취소 요청을 확인했습니다. 가능한 범위에서 원복 중입니다.";
+            _snapshot.Message = AppText.CancellationSeenRestoring;
             SaveCurrent();
         }
     }
@@ -116,16 +117,6 @@ public sealed class OperationProgressReporter : IProgress<AclOperationProgress>,
 
     private static string PhaseToMessage(string phase)
     {
-        return phase switch
-        {
-            "scan" => "처리할 항목 수를 계산하는 중입니다.",
-            "backup" => "ACL 백업을 메모리에 수집하는 중입니다.",
-            "lock" => "ACL 잠금을 적용하는 중입니다.",
-            "unlock" => "이은성폴더잠금기(FolderGate 엔진)가 추가한 ACL 규칙을 제거하는 중입니다.",
-            "temporary-unlock-wait" => "임시 잠금 해제 상태입니다. 지정 시간이 지나면 다시 잠급니다.",
-            "restore" => "백업 ACL을 복구하는 중입니다.",
-            "rollback" => "이미 변경된 항목을 원복하는 중입니다.",
-            _ => "작업 중입니다."
-        };
+        return AppText.ProgressMessage(phase);
     }
 }

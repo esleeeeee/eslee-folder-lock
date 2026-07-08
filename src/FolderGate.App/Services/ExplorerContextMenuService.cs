@@ -1,4 +1,5 @@
 using Microsoft.Win32;
+using FolderGate.Core.Localization;
 using FolderGate.Core.Storage;
 
 namespace FolderGate.App.Services;
@@ -6,6 +7,12 @@ namespace FolderGate.App.Services;
 public sealed class ExplorerContextMenuService
 {
     private static readonly string[] MenuKeyPaths =
+    [
+        @"Software\Classes\Directory\shell\eslee-folder-locker-unlock",
+        @"Software\Classes\Folder\shell\eslee-folder-locker-unlock"
+    ];
+
+    private static readonly string[] LegacyMenuKeyPaths =
     [
         @"Software\Classes\Directory\shell\eslee-folder-lock-unlock",
         @"Software\Classes\Folder\shell\eslee-folder-lock-unlock"
@@ -26,19 +33,27 @@ public sealed class ExplorerContextMenuService
         foreach (string menuKeyPath in MenuKeyPaths)
         {
             using RegistryKey menuKey = Registry.CurrentUser.CreateSubKey(menuKeyPath, writable: true)
-                ?? throw new InvalidOperationException("탐색기 메뉴 레지스트리 키를 만들지 못했습니다.");
-            menuKey.SetValue(null, "이은성폴더잠금기로 잠금 해제");
+                ?? throw new InvalidOperationException(AppText.ExplorerMenuKeyCreateFailed);
+            menuKey.SetValue(null, AppText.ExplorerUnlockMenuText);
             menuKey.SetValue("Icon", appPath);
 
             using RegistryKey commandKey = Registry.CurrentUser.CreateSubKey(menuKeyPath + @"\command", writable: true)
-                ?? throw new InvalidOperationException("탐색기 메뉴 명령 레지스트리 키를 만들지 못했습니다.");
+                ?? throw new InvalidOperationException(AppText.ExplorerMenuCommandKeyCreateFailed);
             commandKey.SetValue(null, BuildCommand(appPath, _paths.ProjectRoot));
         }
+
+        RemoveKeys(LegacyMenuKeyPaths);
     }
 
     public void Uninstall()
     {
-        foreach (string menuKeyPath in MenuKeyPaths)
+        RemoveKeys(MenuKeyPaths);
+        RemoveKeys(LegacyMenuKeyPaths);
+    }
+
+    private static void RemoveKeys(IEnumerable<string> menuKeyPaths)
+    {
+        foreach (string menuKeyPath in menuKeyPaths)
         {
             Registry.CurrentUser.DeleteSubKeyTree(menuKeyPath, throwOnMissingSubKey: false);
         }

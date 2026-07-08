@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using FolderGate.Core.Localization;
 using FolderGate.Core.Models;
 using FolderGate.Core.Storage;
 
@@ -28,11 +29,11 @@ public sealed class ElevatedToolRunner
         try
         {
             return Process.Start(startInfo)
-                ?? throw new InvalidOperationException("프로세스를 시작하지 못했습니다.");
+                ?? throw new InvalidOperationException(AppText.ProcessNotStarted);
         }
         catch (Win32Exception ex) when ((uint)ex.NativeErrorCode == 1223)
         {
-            throw new InvalidOperationException("UAC 승격이 취소되었습니다.", ex);
+            throw new InvalidOperationException(AppText.UacCanceled, ex);
         }
     }
 
@@ -103,12 +104,12 @@ public sealed class ElevatedToolRunner
         try
         {
             using Process process = Process.Start(startInfo)
-                ?? throw new InvalidOperationException("프로세스를 시작하지 못했습니다.");
+                ?? throw new InvalidOperationException(AppText.ProcessNotStarted);
             return await WaitForExitAsync(process).ConfigureAwait(true);
         }
         catch (Win32Exception ex) when ((uint)ex.NativeErrorCode == 1223)
         {
-            throw new InvalidOperationException("UAC 승격이 취소되었습니다.", ex);
+            throw new InvalidOperationException(AppText.UacCanceled, ex);
         }
     }
 

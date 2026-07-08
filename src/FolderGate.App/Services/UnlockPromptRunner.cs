@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Windows;
+using FolderGate.Core.Localization;
 using FolderGate.Core.Models;
 using FolderGate.Core.Security;
 using FolderGate.Core.Storage;
@@ -28,19 +29,19 @@ public sealed class UnlockPromptRunner
         RegisteredFolder? folder = FindRegisteredFolder(config, targetPath);
         if (folder is null)
         {
-            ShowError($"등록된 잠금 폴더가 아닙니다.{Environment.NewLine}{targetPath}");
+            ShowError($"{AppText.FolderNotRegisteredPrefix}{Environment.NewLine}{targetPath}");
             return 2;
         }
 
         if (config.Password is null)
         {
-            ShowError("설정된 비밀번호가 없습니다. 먼저 이은성폴더잠금기에서 비밀번호를 설정하세요.");
+            ShowError(AppText.NoPasswordConfigured);
             return 2;
         }
 
         if (folder.State == FolderLockState.Working)
         {
-            ShowError("이 폴더는 현재 작업 중입니다. 작업이 끝난 뒤 다시 시도하세요.");
+            ShowError(AppText.FolderIsWorking);
             return 3;
         }
 
@@ -51,8 +52,10 @@ public sealed class UnlockPromptRunner
         }
 
         PasswordDialog dialog = PasswordDialog.CreateUnlockPasswordPrompt(
-            "잠금 해제",
-            $"잠긴 폴더: {folder.Path}{Environment.NewLine}{Environment.NewLine}비밀번호와 잠금 해제 유지 시간을 선택하세요.");
+            AppText.UnlockTitle,
+            AppText.LanguageCode == "en"
+                ? $"Locked folder: {folder.Path}{Environment.NewLine}{Environment.NewLine}{AppText.UnlockPasswordMessage}"
+                : $"잠긴 폴더: {folder.Path}{Environment.NewLine}{Environment.NewLine}{AppText.UnlockPasswordMessage}");
 
         if (dialog.ShowDialog() != true)
         {
@@ -61,7 +64,7 @@ public sealed class UnlockPromptRunner
 
         if (!_passwordService.Verify(dialog.Password, config.Password))
         {
-            ShowError("비밀번호가 올바르지 않습니다. ACL 변경은 수행하지 않았습니다.");
+            ShowError(AppText.InvalidPasswordNoAcl);
             return 4;
         }
 
@@ -85,7 +88,9 @@ public sealed class UnlockPromptRunner
 
         if (exitCode != 0)
         {
-            ShowError($"잠금 해제에 실패했습니다. 종료 코드: {exitCode}");
+            ShowError(AppText.LanguageCode == "en"
+                ? $"Unlock failed. Exit code: {exitCode}"
+                : $"잠금 해제에 실패했습니다. 종료 코드: {exitCode}");
             return exitCode;
         }
 
@@ -97,7 +102,7 @@ public sealed class UnlockPromptRunner
             return 0;
         }
 
-        ShowError("잠금 해제 프로세스는 완료됐지만 폴더 상태가 해제됨으로 갱신되지 않았습니다. 앱에서 상태를 확인하세요.");
+        ShowError(AppText.UnlockCompletedButStateNotUpdated);
         return 5;
     }
 
@@ -132,14 +137,16 @@ public sealed class UnlockPromptRunner
                 if (process.HasExited)
                 {
                     int exitCode = process.ExitCode;
-                    ShowError($"임시 잠금 해제 프로세스가 완료되기 전에 종료되었습니다. 종료 코드: {exitCode}");
+                    ShowError(AppText.LanguageCode == "en"
+                        ? $"Temporary unlock process exited before completion. Exit code: {exitCode}"
+                        : $"임시 잠금 해제 프로세스가 완료되기 전에 종료되었습니다. 종료 코드: {exitCode}");
                     return exitCode == 0 ? 5 : exitCode;
                 }
 
                 await Task.Delay(500).ConfigureAwait(true);
             }
 
-            ShowError("임시 잠금 해제 상태를 확인하지 못했습니다. 앱에서 폴더 상태를 확인하세요.");
+            ShowError(AppText.TempUnlockCheckFailed);
             return 7;
         }
     }
@@ -161,6 +168,6 @@ public sealed class UnlockPromptRunner
 
     private static void ShowError(string message)
     {
-        System.Windows.MessageBox.Show(message, "이은성폴더잠금기", MessageBoxButton.OK, MessageBoxImage.Error);
+        System.Windows.MessageBox.Show(message, AppText.ProductName, MessageBoxButton.OK, MessageBoxImage.Error);
     }
 }

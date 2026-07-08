@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text.Json;
+using FolderGate.Core.Localization;
 using FolderGate.Core.Storage;
 
 namespace FolderGate.Core.Acl;
@@ -32,7 +33,7 @@ public sealed class AclBackupStore
     {
         string json = File.ReadAllText(path);
         return JsonSerializer.Deserialize<AclBackupFile>(json, _jsonOptions)
-            ?? throw new InvalidDataException("ACL 백업 파일을 읽을 수 없습니다.");
+            ?? throw new InvalidDataException(AppText.AclBackupReadFailed);
     }
 
     public IReadOnlyList<string> ListBackups(string targetId)

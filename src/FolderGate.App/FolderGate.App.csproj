@@ -11,16 +11,26 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
-    <ApplicationIcon>..\..\assets\icons\EsleeFolderLock.ico</ApplicationIcon>
-    <Title>이은성폴더잠금기</Title>
-    <Product>이은성폴더잠금기</Product>
-    <Description>이은성폴더잠금기</Description>
-    <AssemblyTitle>이은성폴더잠금기</AssemblyTitle>
+    <ApplicationIcon>..\..\assets\icons\eslee-folder-locker.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AppLanguage)' == 'en'">
+    <Title>eslee Folder Locker</Title>
+    <Product>eslee Folder Locker</Product>
+    <Description>eslee Folder Locker</Description>
+    <AssemblyTitle>eslee Folder Locker</AssemblyTitle>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AppLanguage)' != 'en'">
+    <Title>eslee폴더잠금기</Title>
+    <Product>eslee폴더잠금기</Product>
+    <Description>eslee폴더잠금기</Description>
+    <AssemblyTitle>eslee폴더잠금기</AssemblyTitle>
   </PropertyGroup>
 
   <ItemGroup>
-    <Resource Include="..\..\assets\icons\EsleeFolderLock.ico">
-      <Link>assets\icons\EsleeFolderLock.ico</Link>
+    <Resource Include="..\..\assets\icons\eslee-folder-locker.ico">
+      <Link>assets\icons\eslee-folder-locker.ico</Link>
     </Resource>
   </ItemGroup>
 

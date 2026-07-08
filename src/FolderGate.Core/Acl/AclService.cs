@@ -1,5 +1,6 @@
 using System.Security.AccessControl;
 using System.Security.Principal;
+using FolderGate.Core.Localization;
 using FolderGate.Core.Models;
 using FolderGate.Core.Storage;
 
@@ -108,8 +109,8 @@ public sealed class AclService
         try
         {
             _logger.Info(operationId, folder.Id, "Lock", folder.Path, mode == LockMode.Hardened
-                ? "강화 모드는 단일 프로세스에서 ACL API로 처리합니다. perItemExternalProcessLaunches=0"
-                : "잠금 전 ACL 백업을 시작합니다.");
+                ? AppText.HardenedModeNoPerItemExternalProcess
+                : AppText.StartingAclBackup);
             AclBackupFile backup = await CreateBackupAsync(folder, mode, operationId, cancellationToken, progress).ConfigureAwait(false);
             _backupStore.Save(backupPath, backup);
 
@@ -149,16 +150,16 @@ public sealed class AclService
                 }
             }
 
-            _logger.Info(operationId, folder.Id, "Lock", folder.Path, "잠금이 완료되었습니다.");
-            return AclOperationResult.Ok(operationId, backupPath, changed.Count, "잠금이 완료되었습니다.");
+            _logger.Info(operationId, folder.Id, "Lock", folder.Path, AppText.LockCompleted);
+            return AclOperationResult.Ok(operationId, backupPath, changed.Count, AppText.LockCompleted);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             _logger.Failure(operationId, folder.Id, "Lock", folder.Path, ex);
             bool restoreOk = TryRestoreChangedEntries(operationId, folder.Id, changed, progress);
             string message = restoreOk
-                ? "잠금 중 오류가 발생해 변경한 항목을 복구했습니다."
-                : "잠금 중 오류가 발생했고 일부 항목은 복구가 필요할 수 있습니다.";
+                ? AppText.LockErrorRolledBack
+                : AppText.LockErrorRecoveryRequired;
 
             return AclOperationResult.Failed(operationId, backupPath, changed.Count, message, recoveryRequired: !restoreOk, failedCount: Math.Max(1, failed));
         }
@@ -167,8 +168,8 @@ public sealed class AclService
             _logger.Failure(operationId, folder.Id, "LockCanceled", folder.Path, ex);
             bool restoreOk = TryRestoreChangedEntries(operationId, folder.Id, changed, progress);
             string message = restoreOk
-                ? "잠금 작업이 취소되어 변경한 항목을 복구했습니다."
-                : "잠금 작업이 취소되었고 일부 항목은 복구가 필요할 수 있습니다.";
+                ? AppText.LockCanceledRolledBack
+                : AppText.LockCanceledRecoveryRequired;
 
             return AclOperationResult.Failed(operationId, backupPath, changed.Count, message, recoveryRequired: !restoreOk, failedCount: failed);
         }
@@ -227,18 +228,18 @@ public sealed class AclService
                     }
                 }
 
-                _logger.Info(operationId, folder.Id, "Unlock", folder.Path, "잠금 해제가 완료되었습니다.");
-                return AclOperationResult.Ok(operationId, backupPath, processed, "잠금 해제가 완료되었습니다.");
+                _logger.Info(operationId, folder.Id, "Unlock", folder.Path, AppText.UnlockCompleted);
+                return AclOperationResult.Ok(operationId, backupPath, processed, AppText.UnlockCompleted);
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 _logger.Failure(operationId, folder.Id, "Unlock", folder.Path, ex);
-                return AclOperationResult.Failed(operationId, backupPath, 0, "잠금 해제 중 오류가 발생했습니다. 기존 ACL은 임의로 초기화하지 않았습니다.", recoveryRequired: true, failedCount: Math.Max(1, failed));
+                return AclOperationResult.Failed(operationId, backupPath, 0, AppText.UnlockErrorNoAclReset, recoveryRequired: true, failedCount: Math.Max(1, failed));
             }
             catch (OperationCanceledException ex)
             {
                 _logger.Failure(operationId, folder.Id, "UnlockCanceled", folder.Path, ex);
-                return AclOperationResult.Failed(operationId, backupPath, 0, "잠금 해제 작업이 취소되었습니다. 기존 ACL은 임의로 초기화하지 않았습니다.", recoveryRequired: false, failedCount: failed);
+                return AclOperationResult.Failed(operationId, backupPath, 0, AppText.UnlockCanceledNoAclReset, recoveryRequired: false, failedCount: failed);
             }
         }, cancellationToken);
     }
@@ -286,18 +287,18 @@ public sealed class AclService
                     }
                 }
 
-                _logger.Info(operationId, targetId, "Restore", backup.TargetPath, "ACL 백업 복구가 완료되었습니다.");
-                return AclOperationResult.Ok(operationId, backupPath, processed, "ACL 백업 복구가 완료되었습니다.");
+                _logger.Info(operationId, targetId, "Restore", backup.TargetPath, AppText.RestoreCompleted);
+                return AclOperationResult.Ok(operationId, backupPath, processed, AppText.RestoreCompleted);
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 _logger.Failure(operationId, targetId, "Restore", backup.TargetPath, ex);
-                return AclOperationResult.Failed(operationId, backupPath, processed, "ACL 백업 복구 중 오류가 발생했습니다.", recoveryRequired: true, failedCount: Math.Max(1, failed));
+                return AclOperationResult.Failed(operationId, backupPath, processed, AppText.RestoreError, recoveryRequired: true, failedCount: Math.Max(1, failed));
             }
             catch (OperationCanceledException ex)
             {
                 _logger.Failure(operationId, targetId, "RestoreCanceled", backup.TargetPath, ex);
-                return AclOperationResult.Failed(operationId, backupPath, processed, "ACL 백업 복구 작업이 취소되었습니다.", recoveryRequired: true, failedCount: failed);
+                return AclOperationResult.Failed(operationId, backupPath, processed, AppText.RestoreCanceled, recoveryRequired: true, failedCount: failed);
             }
         }, cancellationToken);
     }
@@ -471,7 +472,7 @@ public sealed class AclService
         }
 
         return WindowsIdentity.GetCurrent().User
-            ?? throw new InvalidOperationException("현재 Windows 사용자 SID를 확인할 수 없습니다.");
+            ?? throw new InvalidOperationException(AppText.CurrentUserSidUnavailable);
     }
 
     private bool TryRestoreChangedEntries(string operationId, string targetId, IReadOnlyList<AclBackupEntry> changedEntries, IProgress<AclOperationProgress>? progress)

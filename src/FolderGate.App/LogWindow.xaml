@@ -1,8 +1,9 @@
 <Window x:Class="FolderGate.App.LogWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="이은성폴더잠금기 작업 로그"
-        Icon="pack://application:,,,/FolderGate.App;component/assets/icons/EsleeFolderLock.ico"
+        xmlns:text="clr-namespace:FolderGate.Core.Localization;assembly=FolderGate.Core"
+        Title="{x:Static text:AppText.LogWindowTitle}"
+        Icon="pack://application:,,,/FolderGate.App;component/assets/icons/eslee-folder-locker.ico"
         WindowStartupLocation="CenterOwner"
         Width="820"
         Height="520">
@@ -21,7 +22,7 @@
                  HorizontalScrollBarVisibility="Auto" />
 
         <Button Grid.Row="1"
-                Content="닫기"
+                Content="{x:Static text:AppText.Close}"
                 HorizontalAlignment="Right"
                 MinWidth="88"
                 Height="32"

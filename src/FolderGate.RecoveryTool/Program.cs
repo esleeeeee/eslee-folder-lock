@@ -2,13 +2,13 @@ using System.Diagnostics;
 using System.Text;
 using FolderGate.Core.Acl;
 using FolderGate.Core.Formatting;
+using FolderGate.Core.Localization;
 using FolderGate.Core.Models;
 using FolderGate.Core.Security;
 using FolderGate.Core.Storage;
 
 Console.OutputEncoding = Encoding.UTF8;
-const string RecoveryToolDisplayName = "이은성폴더잠금기 복구 도구";
-Console.Title = RecoveryToolDisplayName;
+Console.Title = AppText.RecoveryToolName;
 
 try
 {
@@ -16,11 +16,11 @@ try
     {
         if (HasArgument(args, "--no-uac-relaunch"))
         {
-            Console.Error.WriteLine($"{RecoveryToolDisplayName}는 관리자 권한이 필요합니다.");
+            Console.Error.WriteLine(AppText.RecoveryRequiresAdmin);
             return 740;
         }
 
-        Console.WriteLine($"{RecoveryToolDisplayName}는 관리자 권한이 필요합니다. UAC 승격을 요청합니다.");
+        Console.WriteLine(AppText.RecoveryRequestingUac);
         RelaunchElevated(args);
         return 740;
     }
@@ -31,7 +31,7 @@ try
 
     if (config.Folders.Count == 0)
     {
-        Console.WriteLine("등록된 잠금 대상이 없습니다.");
+        Console.WriteLine(AppText.NoRegisteredTargets);
         return 0;
     }
 
@@ -41,7 +41,7 @@ try
 
     if (backups.Count == 0)
     {
-        Console.WriteLine("선택한 대상의 ACL 백업 파일이 없습니다.");
+        Console.WriteLine(AppText.NoAclBackupsForTarget);
         return 1;
     }
 
@@ -49,18 +49,18 @@ try
     AclBackupFile backup = backupStore.Load(backupPath);
 
     Console.WriteLine();
-    Console.WriteLine("복구 예정 정보");
-    Console.WriteLine($"대상 경로: {backup.TargetPath}");
-    Console.WriteLine($"백업 파일: {backupPath}");
-    Console.WriteLine($"백업 생성 시간: {LocalTimeFormatter.FormatLocal(backup.CreatedUtc)}");
-    Console.WriteLine($"복구 항목 수: {backup.Entries.Count}");
-    Console.WriteLine("선택한 백업에 기록된 경로만 복구합니다.");
-    Console.Write("복구를 실행하려면 RESTORE 를 입력하세요: ");
+    Console.WriteLine(AppText.PlannedRecoveryInfo);
+    Console.WriteLine($"{AppText.TargetPath}: {backup.TargetPath}");
+    Console.WriteLine($"{AppText.BackupFile}: {backupPath}");
+    Console.WriteLine($"{AppText.BackupCreatedTime}: {LocalTimeFormatter.FormatLocal(backup.CreatedUtc)}");
+    Console.WriteLine($"{AppText.RecoveryEntryCount}: {backup.Entries.Count}");
+    Console.WriteLine(AppText.RestoreOnlyRecordedPaths);
+    Console.Write(AppText.RestoreConfirmationPrompt);
 
     string? confirmation = Console.ReadLine();
     if (!string.Equals(confirmation, "RESTORE", StringComparison.Ordinal))
     {
-        Console.WriteLine("복구를 취소했습니다.");
+        Console.WriteLine(AppText.RecoveryCanceled);
         return 0;
     }
 
@@ -89,7 +89,7 @@ catch (Exception ex)
 
 static RegisteredFolder SelectFolder(IReadOnlyList<RegisteredFolder> folders)
 {
-    Console.WriteLine("복구할 대상을 선택하세요.");
+    Console.WriteLine(AppText.SelectRecoveryTarget);
     for (int i = 0; i < folders.Count; i++)
     {
         RegisteredFolder folder = folders[i];
@@ -104,11 +104,11 @@ static RegisteredFolder SelectFolder(IReadOnlyList<RegisteredFolder> folders)
 static string SelectBackup(IReadOnlyList<string> backups, AclBackupStore backupStore)
 {
     Console.WriteLine();
-    Console.WriteLine("사용할 백업을 선택하세요.");
+    Console.WriteLine(AppText.SelectBackup);
     for (int i = 0; i < backups.Count; i++)
     {
         AclBackupFile backup = backupStore.Load(backups[i]);
-        Console.WriteLine($"{i + 1}. {LocalTimeFormatter.FormatLocal(backup.CreatedUtc)} / {backup.Mode} / {backup.Entries.Count}개 항목");
+        Console.WriteLine($"{i + 1}. {LocalTimeFormatter.FormatLocal(backup.CreatedUtc)} / {backup.Mode} / {backup.Entries.Count} {AppText.ItemsSuffix}");
         Console.WriteLine($"   {backups[i]}");
     }
 
@@ -120,14 +120,14 @@ static int ReadIndex(int count)
 {
     while (true)
     {
-        Console.Write("번호: ");
+        Console.Write(AppText.NumberPrompt);
         string? input = Console.ReadLine();
         if (int.TryParse(input, out int number) && number >= 1 && number <= count)
         {
             return number - 1;
         }
 
-        Console.WriteLine("올바른 번호를 입력하세요.");
+        Console.WriteLine(AppText.InvalidNumber);
     }
 }
 
@@ -151,7 +151,7 @@ static bool HasArgument(string[] args, string name)
 
 static void RelaunchElevated(string[] args)
 {
-    string exePath = Environment.ProcessPath ?? throw new InvalidOperationException("현재 실행 파일 경로를 확인할 수 없습니다.");
+    string exePath = Environment.ProcessPath ?? throw new InvalidOperationException(AppText.CurrentExePathUnavailable);
     ProcessStartInfo startInfo = new()
     {
         FileName = exePath,

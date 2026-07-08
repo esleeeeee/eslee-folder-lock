@@ -3,9 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:text="clr-namespace:FolderGate.Core.Localization;assembly=FolderGate.Core"
         mc:Ignorable="d"
-        Title="이은성폴더잠금기"
-        Icon="pack://application:,,,/FolderGate.App;component/assets/icons/EsleeFolderLock.ico"
+        Title="{x:Static text:AppText.ProductName}"
+        Icon="pack://application:,,,/FolderGate.App;component/assets/icons/eslee-folder-locker.ico"
         MinHeight="640"
         MinWidth="980"
         Height="700"
@@ -30,10 +31,10 @@
 
         <DockPanel Margin="0,0,0,16">
             <StackPanel DockPanel.Dock="Left">
-                <TextBlock Text="이은성폴더잠금기"
+                <TextBlock Text="{x:Static text:AppText.ProductName}"
                            FontSize="26"
                            FontWeight="SemiBold" />
-                <TextBlock Text="일반적인 파일 탐색기 접근 차단용 NTFS 폴더 잠금 도구"
+                <TextBlock Text="{x:Static text:AppText.MainSubtitle}"
                            Foreground="#555"
                            Margin="0,4,0,0" />
             </StackPanel>
@@ -53,7 +54,7 @@
 
             <DockPanel Grid.Column="0">
                 <TextBlock DockPanel.Dock="Top"
-                           Text="등록된 잠금 폴더"
+                           Text="{x:Static text:AppText.RegisteredFolders}"
                            FontSize="16"
                            FontWeight="SemiBold"
                            Margin="0,0,0,8" />
@@ -66,19 +67,19 @@
                           HeadersVisibility="Column"
                           GridLinesVisibility="Horizontal">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="이름"
+                        <DataGridTextColumn Header="{x:Static text:AppText.ColumnName}"
                                             Binding="{Binding DisplayName}"
                                             Width="150" />
-                        <DataGridTextColumn Header="상태"
+                        <DataGridTextColumn Header="{x:Static text:AppText.ColumnState}"
                                             Binding="{Binding StateText}"
                                             Width="92" />
-                        <DataGridTextColumn Header="모드"
+                        <DataGridTextColumn Header="{x:Static text:AppText.ColumnMode}"
                                             Binding="{Binding ModeText}"
                                             Width="100" />
-                        <DataGridTextColumn Header="등록 경로"
+                        <DataGridTextColumn Header="{x:Static text:AppText.ColumnRegisteredPath}"
                                             Binding="{Binding Path}"
                                             Width="*" />
-                        <DataGridTextColumn Header="마지막 작업"
+                        <DataGridTextColumn Header="{x:Static text:AppText.ColumnLastOperation}"
                                             Binding="{Binding LastOperationText}"
                                             Width="145" />
                     </DataGrid.Columns>
@@ -94,37 +95,37 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="작업"
+                <TextBlock Text="{x:Static text:AppText.Actions}"
                            FontSize="16"
                            FontWeight="SemiBold"
                            Margin="0,0,0,8" />
 
                 <WrapPanel Grid.Row="1"
                            Margin="0,0,0,10">
-                    <Button Content="폴더 추가"
+                    <Button Content="{x:Static text:AppText.AddFolder}"
                             Command="{Binding AddFolderCommand}" />
-                    <Button Content="폴더 제거"
+                    <Button Content="{x:Static text:AppText.RemoveFolder}"
                             Command="{Binding RemoveFolderCommand}" />
-                    <Button Content="잠금"
+                    <Button Content="{x:Static text:AppText.Lock}"
                             Command="{Binding LockCommand}" />
-                    <Button Content="잠금 해제"
+                    <Button Content="{x:Static text:AppText.Unlock}"
                             Command="{Binding UnlockCommand}" />
-                    <Button Content="로그 보기"
+                    <Button Content="{x:Static text:AppText.ShowLogs}"
                             Command="{Binding ShowLogsCommand}" />
-                    <Button Content="비밀번호 변경"
+                    <Button Content="{x:Static text:AppText.ChangePassword}"
                             Command="{Binding ChangePasswordCommand}" />
-                    <Button Content="복구 도구 열기"
+                    <Button Content="{x:Static text:AppText.OpenRecoveryTool}"
                             Command="{Binding OpenRecoveryToolCommand}" />
-                    <Button Content="탐색기 메뉴 등록"
+                    <Button Content="{x:Static text:AppText.RegisterExplorerMenu}"
                             Command="{Binding RegisterExplorerMenuCommand}" />
-                    <Button Content="탐색기 메뉴 제거"
+                    <Button Content="{x:Static text:AppText.UnregisterExplorerMenu}"
                             Command="{Binding UnregisterExplorerMenuCommand}" />
-                    <Button Content="취소"
+                    <Button Content="{x:Static text:AppText.Cancel}"
                             Command="{Binding CancelOperationCommand}" />
                 </WrapPanel>
 
                 <GroupBox Grid.Row="2"
-                          Header="진행 상태"
+                          Header="{x:Static text:AppText.ProgressStatus}"
                           Padding="12"
                           Margin="0,0,0,12">
                     <Grid>
@@ -139,11 +140,11 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="단계" FontWeight="SemiBold" />
+                        <TextBlock Text="{x:Static text:AppText.Phase}" FontWeight="SemiBold" />
                         <TextBlock Grid.Column="1" Text="{Binding OperationPhase}" />
 
                         <TextBlock Grid.Row="1"
-                                   Text="항목"
+                                   Text="{x:Static text:AppText.Items}"
                                    FontWeight="SemiBold"
                                    Margin="0,8,0,0" />
                         <TextBlock Grid.Row="1"
@@ -152,25 +153,25 @@
                             <Run Text="{Binding OperationCompleted}" />
                             <Run Text=" / " />
                             <Run Text="{Binding OperationTotal}" />
-                            <Run Text="  실패 " />
+                            <Run Text="{x:Static text:AppText.FailedInline}" />
                             <Run Text="{Binding OperationFailed}" />
                         </TextBlock>
 
                         <TextBlock Grid.Row="2"
-                                   Text="시간"
+                                   Text="{x:Static text:AppText.Time}"
                                    FontWeight="SemiBold"
                                    Margin="0,8,0,0" />
                         <TextBlock Grid.Row="2"
                                    Grid.Column="1"
                                    Margin="0,8,0,0">
-                            <Run Text="경과 " />
+                            <Run Text="{x:Static text:AppText.ElapsedInline}" />
                             <Run Text="{Binding OperationElapsed}" />
-                            <Run Text="  남은 시간 " />
+                            <Run Text="{x:Static text:AppText.EtaInline}" />
                             <Run Text="{Binding OperationEta}" />
                         </TextBlock>
 
                         <TextBlock Grid.Row="3"
-                                   Text="현재 경로"
+                                   Text="{x:Static text:AppText.CurrentPath}"
                                    FontWeight="SemiBold"
                                    Margin="0,8,0,0" />
                         <TextBlock Grid.Row="3"
@@ -182,21 +183,21 @@
                 </GroupBox>
 
                 <GroupBox Grid.Row="3"
-                          Header="잠금 모드"
+                          Header="{x:Static text:AppText.LockMode}"
                           Padding="12"
                           Margin="0,0,0,12">
                     <StackPanel>
-                        <RadioButton Content="빠른 모드"
+                        <RadioButton Content="{x:Static text:AppText.QuickMode}"
                                      IsChecked="{Binding IsQuickMode, Mode=TwoWay}"
                                      Margin="0,0,0,8" />
-                        <TextBlock Text="선택한 폴더 루트만 처리합니다. 파일 크기와 거의 무관하게 빠릅니다."
+                        <TextBlock Text="{x:Static text:AppText.QuickModeDescription}"
                                    Foreground="#555"
                                    TextWrapping="Wrap"
                                    Margin="22,0,0,10" />
-                        <RadioButton Content="강화 모드"
+                        <RadioButton Content="{x:Static text:AppText.HardenedMode}"
                                      IsChecked="{Binding IsHardenedMode, Mode=TwoWay}"
                                      Margin="0,0,0,8" />
-                        <TextBlock Text="하위 파일과 폴더의 ACL을 재귀 처리합니다. 파일·폴더 개수에 따라 시간이 달라집니다."
+                        <TextBlock Text="{x:Static text:AppText.HardenedModeDescription}"
                                    Foreground="#555"
                                    TextWrapping="Wrap"
                                    Margin="22,0,0,0" />
@@ -204,7 +205,7 @@
                 </GroupBox>
 
                 <GroupBox Grid.Row="4"
-                          Header="선택한 폴더"
+                          Header="{x:Static text:AppText.SelectedFolder}"
                           Padding="12">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -219,12 +220,12 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="현재 상태" FontWeight="SemiBold" />
+                        <TextBlock Text="{x:Static text:AppText.CurrentState}" FontWeight="SemiBold" />
                         <TextBlock Grid.Column="1"
                                    Text="{Binding SelectedState}" />
 
                         <TextBlock Grid.Row="1"
-                                   Text="등록 경로"
+                                   Text="{x:Static text:AppText.ColumnRegisteredPath}"
                                    FontWeight="SemiBold"
                                    Margin="0,10,0,0" />
                         <TextBlock Grid.Row="1"
@@ -234,7 +235,7 @@
                                    Margin="0,10,0,0" />
 
                         <TextBlock Grid.Row="2"
-                                   Text="마지막 시간"
+                                   Text="{x:Static text:AppText.LastTime}"
                                    FontWeight="SemiBold"
                                    Margin="0,10,0,0" />
                         <TextBlock Grid.Row="2"
@@ -243,7 +244,7 @@
                                    Margin="0,10,0,0" />
 
                         <TextBlock Grid.Row="3"
-                                   Text="마지막 결과"
+                                   Text="{x:Static text:AppText.LastResult}"
                                    FontWeight="SemiBold"
                                    Margin="0,10,0,0" />
                         <TextBlock Grid.Row="3"
@@ -254,7 +255,7 @@
 
                         <TextBlock Grid.Row="4"
                                    Grid.ColumnSpan="2"
-                                   Text="이 프로그램은 파일 내용을 암호화하거나 이동하지 않습니다. 빠른 모드는 파일 크기와 무관하게 빠르게 처리되며, 강화 모드는 파일·폴더 개수에 따라 시간이 달라질 수 있습니다. 관리자 권한이나 ACL 지식이 있는 사용자는 우회할 수 있습니다."
+                                   Text="{x:Static text:AppText.MainDisclaimer}"
                                    TextWrapping="Wrap"
                                    Foreground="#444"
                                    Margin="0,18,0,0" />

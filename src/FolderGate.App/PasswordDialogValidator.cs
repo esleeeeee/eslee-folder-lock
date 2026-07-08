@@ -1,4 +1,5 @@
 using FolderGate.Core.Security;
+using FolderGate.Core.Localization;
 
 namespace FolderGate.App;
 
@@ -8,12 +9,12 @@ public static class PasswordDialogValidator
     {
         if (string.IsNullOrWhiteSpace(password) || password.Length < PasswordService.MinimumPasswordLength)
         {
-            return $"비밀번호는 최소 {PasswordService.MinimumPasswordLength}자 이상이어야 합니다.";
+            return AppText.PasswordTooShort;
         }
 
         if (requiresConfirmation && !string.Equals(password, confirmation, StringComparison.Ordinal))
         {
-            return "비밀번호 확인이 일치하지 않습니다.";
+            return AppText.PasswordConfirmMismatch;
         }
 
         return null;

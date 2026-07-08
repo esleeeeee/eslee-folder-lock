@@ -1,17 +1,19 @@
+using FolderGate.Core.Localization;
+
 namespace FolderGate.App.Tests;
 
 [TestClass]
 public sealed class DisplayNameAndIconTests
 {
     [TestMethod]
-    public void MainWindow_UsesKoreanDisplayNameAndIcon()
+    public void MainWindow_UsesDisplayNameAndIcon()
     {
         RunOnStaThread(() =>
         {
             MainWindow window = new();
             try
             {
-                Assert.AreEqual("이은성폴더잠금기", window.Title);
+                Assert.AreEqual(AppText.ProductName, window.Title);
                 Assert.IsNotNull(window.Icon);
             }
             finally

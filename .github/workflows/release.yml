@@ -25,41 +25,62 @@ jobs:
         run: dotnet restore .\FolderGate.sln
 
       - name: Build
-        run: dotnet build .\FolderGate.sln -c Release --no-restore
+        run: dotnet build .\FolderGate.sln -c Release --no-restore -p:AppLanguage=ko
 
       - name: Test core project
-        run: dotnet test .\tests\FolderGate.Core.Tests\FolderGate.Core.Tests.csproj -c Release --no-build
+        run: dotnet test .\tests\FolderGate.Core.Tests\FolderGate.Core.Tests.csproj -c Release --no-build -p:AppLanguage=ko
 
       - name: Test app project
-        run: dotnet test .\tests\FolderGate.App.Tests\FolderGate.App.Tests.csproj -c Release --no-build
+        run: dotnet test .\tests\FolderGate.App.Tests\FolderGate.App.Tests.csproj -c Release --no-build -p:AppLanguage=ko
 
-      - name: Publish app
-        run: dotnet publish .\src\FolderGate.App\FolderGate.App.csproj -c Release -r win-x64 --self-contained false -o .\artifacts\publish
+      - name: Build English
+        run: dotnet build .\FolderGate.sln -c Release --no-restore -p:AppLanguage=en
 
-      - name: Publish elevated helper
-        run: dotnet publish .\src\FolderGate.ElevatedHelper\FolderGate.ElevatedHelper.csproj -c Release -r win-x64 --self-contained false -o .\artifacts\publish
+      - name: Publish Korean app
+        run: dotnet publish .\src\FolderGate.App\FolderGate.App.csproj -c Release -r win-x64 --self-contained false -p:AppLanguage=ko -o .\artifacts\publish-ko
 
-      - name: Publish recovery tool
-        run: dotnet publish .\src\FolderGate.RecoveryTool\FolderGate.RecoveryTool.csproj -c Release -r win-x64 --self-contained false -o .\artifacts\publish
+      - name: Publish Korean elevated helper
+        run: dotnet publish .\src\FolderGate.ElevatedHelper\FolderGate.ElevatedHelper.csproj -c Release -r win-x64 --self-contained false -p:AppLanguage=ko -o .\artifacts\publish-ko
+
+      - name: Publish Korean recovery tool
+        run: dotnet publish .\src\FolderGate.RecoveryTool\FolderGate.RecoveryTool.csproj -c Release -r win-x64 --self-contained false -p:AppLanguage=ko -o .\artifacts\publish-ko
 
       - name: Create Korean executable aliases
         shell: pwsh
         run: |
-          Copy-Item .\artifacts\publish\FolderGate.App.exe .\artifacts\publish\이은성폴더잠금기.exe -Force
-          Copy-Item .\artifacts\publish\FolderGate.ElevatedHelper.exe .\artifacts\publish\이은성폴더잠금기_권한도우미.exe -Force
-          Copy-Item .\artifacts\publish\FolderGate.RecoveryTool.exe .\artifacts\publish\이은성폴더잠금기_복구도구.exe -Force
+          Copy-Item .\artifacts\publish-ko\FolderGate.App.exe .\artifacts\publish-ko\eslee폴더잠금기.exe -Force
+          Copy-Item .\artifacts\publish-ko\FolderGate.ElevatedHelper.exe .\artifacts\publish-ko\eslee폴더잠금기_권한도우미.exe -Force
+          Copy-Item .\artifacts\publish-ko\FolderGate.RecoveryTool.exe .\artifacts\publish-ko\eslee폴더잠금기_복구도구.exe -Force
+
+      - name: Publish English app
+        run: dotnet publish .\src\FolderGate.App\FolderGate.App.csproj -c Release -r win-x64 --self-contained false -p:AppLanguage=en -o .\artifacts\publish-en
+
+      - name: Publish English elevated helper
+        run: dotnet publish .\src\FolderGate.ElevatedHelper\FolderGate.ElevatedHelper.csproj -c Release -r win-x64 --self-contained false -p:AppLanguage=en -o .\artifacts\publish-en
+
+      - name: Publish English recovery tool
+        run: dotnet publish .\src\FolderGate.RecoveryTool\FolderGate.RecoveryTool.csproj -c Release -r win-x64 --self-contained false -p:AppLanguage=en -o .\artifacts\publish-en
+
+      - name: Create English executable aliases
+        shell: pwsh
+        run: |
+          Copy-Item .\artifacts\publish-en\FolderGate.App.exe .\artifacts\publish-en\eslee-folder-locker.exe -Force
+          Copy-Item .\artifacts\publish-en\FolderGate.ElevatedHelper.exe .\artifacts\publish-en\eslee-folder-locker-helper.exe -Force
+          Copy-Item .\artifacts\publish-en\FolderGate.RecoveryTool.exe .\artifacts\publish-en\eslee-folder-locker-recovery.exe -Force
 
       - name: Package release zip
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path .\artifacts\release -Force | Out-Null
-          $assetName = "eslee-folder-lock-${{ github.ref_name }}-win-x64.zip"
-          Compress-Archive -Path .\artifacts\publish\* -DestinationPath ".\artifacts\release\$assetName" -Force
+          Compress-Archive -Path .\artifacts\publish-ko\* -DestinationPath ".\artifacts\release\eslee-folder-locker-${{ github.ref_name }}-ko-win-x64.zip" -Force
+          Compress-Archive -Path .\artifacts\publish-en\* -DestinationPath ".\artifacts\release\eslee-folder-locker-${{ github.ref_name }}-en-win-x64.zip" -Force
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          name: eslee-folder-lock ${{ github.ref_name }}
+          name: eslee-folder-locker ${{ github.ref_name }}
           body_path: .github/release-notes/${{ github.ref_name }}.md
-          files: .\artifacts\release\eslee-folder-lock-${{ github.ref_name }}-win-x64.zip
+          files: |
+            .\artifacts\release\eslee-folder-locker-${{ github.ref_name }}-ko-win-x64.zip
+            .\artifacts\release\eslee-folder-locker-${{ github.ref_name }}-en-win-x64.zip
           make_latest: true

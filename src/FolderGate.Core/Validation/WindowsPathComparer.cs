@@ -1,3 +1,5 @@
+using FolderGate.Core.Localization;
+
 namespace FolderGate.Core.Validation;
 
 public static class WindowsPathComparer
@@ -6,7 +8,7 @@ public static class WindowsPathComparer
     {
         if (string.IsNullOrWhiteSpace(path))
         {
-            throw new ArgumentException("경로가 비어 있습니다.", nameof(path));
+            throw new ArgumentException(AppText.EmptyPath, nameof(path));
         }
 
         string trimmed = path.Trim().Trim('"');

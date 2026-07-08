@@ -1,5 +1,6 @@
 using System.Windows;
 using FolderGate.App.Services;
+using FolderGate.Core.Localization;
 using FolderGate.Core.Storage;
 
 namespace FolderGate.App;
@@ -17,7 +18,7 @@ public partial class App : System.Windows.Application
         }
         catch (ArgumentException ex)
         {
-            System.Windows.MessageBox.Show(ex.Message, "이은성폴더잠금기", MessageBoxButton.OK, MessageBoxImage.Error);
+            System.Windows.MessageBox.Show(ex.Message, AppText.ProductName, MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown(2);
             return;
         }

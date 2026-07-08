@@ -1,4 +1,5 @@
 using FolderGate.App.ViewModels;
+using FolderGate.Core.Localization;
 using FolderGate.Core.Models;
 
 namespace FolderGate.App.Tests;
@@ -14,6 +15,6 @@ public sealed class FolderItemViewModelTests
             State = FolderLockState.TemporarilyUnlocked
         });
 
-        Assert.AreEqual("임시 해제", viewModel.StateText);
+        Assert.AreEqual(AppText.StateName(FolderLockState.TemporarilyUnlocked), viewModel.StateText);
     }
 }

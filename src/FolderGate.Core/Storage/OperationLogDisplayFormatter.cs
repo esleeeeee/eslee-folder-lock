@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using FolderGate.Core.Formatting;
+using FolderGate.Core.Localization;
 
 namespace FolderGate.Core.Storage;
 
@@ -15,7 +16,7 @@ public static class OperationLogDisplayFormatter
     {
         if (string.IsNullOrWhiteSpace(jsonLines))
         {
-            return "아직 기록된 로그가 없습니다.";
+            return AppText.NoLogsYet;
         }
 
         StringBuilder builder = new();
@@ -30,12 +31,12 @@ public static class OperationLogDisplayFormatter
 
             OperationLogRecord? record = TryReadRecord(line);
             builder.AppendLine(record is null
-                ? "[읽을 수 없는 로그 항목]"
+                ? AppText.UnreadableLogItem
                 : FormatRecord(record, timeZone, timeZoneLabel));
         }
 
         return builder.Length == 0
-            ? "아직 기록된 로그가 없습니다."
+            ? AppText.NoLogsYet
             : builder.ToString();
     }
 

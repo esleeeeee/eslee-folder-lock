@@ -1,5 +1,6 @@
 using System.IO;
 using System.Windows;
+using FolderGate.Core.Localization;
 using FolderGate.Core.Storage;
 using Microsoft.Win32;
 
@@ -18,7 +19,7 @@ public sealed class UserInteractionService : IUserInteractionService
     {
         OpenFolderDialog dialog = new()
         {
-            Title = "잠글 폴더 선택",
+            Title = AppText.SelectFolderTitle,
             Multiselect = false
         };
 
@@ -55,19 +56,19 @@ public sealed class UserInteractionService : IUserInteractionService
 
     public void ShowError(string message)
     {
-        System.Windows.MessageBox.Show(_owner, message, "이은성폴더잠금기", MessageBoxButton.OK, MessageBoxImage.Error);
+        System.Windows.MessageBox.Show(_owner, message, AppText.ProductName, MessageBoxButton.OK, MessageBoxImage.Error);
     }
 
     public void ShowInfo(string message)
     {
-        System.Windows.MessageBox.Show(_owner, message, "이은성폴더잠금기", MessageBoxButton.OK, MessageBoxImage.Information);
+        System.Windows.MessageBox.Show(_owner, message, AppText.ProductName, MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     public void ShowLogFile(string logFilePath)
     {
         string text = File.Exists(logFilePath)
             ? OperationLogDisplayFormatter.FormatJsonLinesForDisplay(File.ReadAllText(logFilePath))
-            : "아직 기록된 로그가 없습니다.";
+            : AppText.NoLogsYet;
 
         LogWindow window = new(text)
         {

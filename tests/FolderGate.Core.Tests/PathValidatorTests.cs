@@ -1,3 +1,4 @@
+using FolderGate.Core.Localization;
 using FolderGate.Core.Storage;
 using FolderGate.Core.Validation;
 
@@ -15,7 +16,7 @@ public sealed class PathValidatorTests
         PathValidationResult result = validator.ValidateDirectory(paths.ProjectRoot);
 
         Assert.IsFalse(result.IsValid);
-        StringAssert.Contains(result.ErrorMessage, "프로젝트");
+        Assert.AreEqual(AppText.ProjectFolderBlocked, result.ErrorMessage);
     }
 
     [TestMethod]

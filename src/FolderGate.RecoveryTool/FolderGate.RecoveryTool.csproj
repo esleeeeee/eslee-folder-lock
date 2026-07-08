@@ -9,11 +9,21 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <ApplicationIcon>..\..\assets\icons\EsleeFolderLock.ico</ApplicationIcon>
-    <Title>이은성폴더잠금기 복구 도구</Title>
-    <Product>이은성폴더잠금기</Product>
-    <Description>이은성폴더잠금기 복구 도구</Description>
-    <AssemblyTitle>이은성폴더잠금기 복구 도구</AssemblyTitle>
+    <ApplicationIcon>..\..\assets\icons\eslee-folder-locker.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AppLanguage)' == 'en'">
+    <Title>eslee Folder Locker Recovery Tool</Title>
+    <Product>eslee Folder Locker</Product>
+    <Description>eslee Folder Locker Recovery Tool</Description>
+    <AssemblyTitle>eslee Folder Locker Recovery Tool</AssemblyTitle>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AppLanguage)' != 'en'">
+    <Title>eslee폴더잠금기 복구 도구</Title>
+    <Product>eslee폴더잠금기</Product>
+    <Description>eslee폴더잠금기 복구 도구</Description>
+    <AssemblyTitle>eslee폴더잠금기 복구 도구</AssemblyTitle>
   </PropertyGroup>
 
 </Project>

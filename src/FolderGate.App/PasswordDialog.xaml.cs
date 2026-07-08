@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
+using FolderGate.Core.Localization;
 
 namespace FolderGate.App;
 
@@ -44,7 +45,7 @@ public partial class PasswordDialog : Window
         string? validationError = PasswordDialogValidator.Validate(PasswordInput.Password, ConfirmInput.Password, _requiresConfirmation);
         if (validationError is not null)
         {
-            System.Windows.MessageBox.Show(this, validationError, "이은성폴더잠금기", MessageBoxButton.OK, MessageBoxImage.Warning);
+            System.Windows.MessageBox.Show(this, validationError, AppText.ProductName, MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -110,12 +111,12 @@ public sealed class UnlockDurationOption
 
     public static IReadOnlyList<UnlockDurationOption> Defaults { get; } =
     [
-        new("1분", TimeSpan.FromMinutes(1)),
-        new("5분", TimeSpan.FromMinutes(5)),
-        new("10분", TimeSpan.FromMinutes(10)),
-        new("30분", TimeSpan.FromMinutes(30)),
-        new("1시간", TimeSpan.FromHours(1)),
-        new("하루", TimeSpan.FromDays(1)),
-        new("완전 해제", null)
+        new(AppText.LanguageCode == "en" ? "1 minute" : "1분", TimeSpan.FromMinutes(1)),
+        new(AppText.LanguageCode == "en" ? "5 minutes" : "5분", TimeSpan.FromMinutes(5)),
+        new(AppText.LanguageCode == "en" ? "10 minutes" : "10분", TimeSpan.FromMinutes(10)),
+        new(AppText.LanguageCode == "en" ? "30 minutes" : "30분", TimeSpan.FromMinutes(30)),
+        new(AppText.LanguageCode == "en" ? "1 hour" : "1시간", TimeSpan.FromHours(1)),
+        new(AppText.LanguageCode == "en" ? "1 day" : "하루", TimeSpan.FromDays(1)),
+        new(AppText.LanguageCode == "en" ? "Unlock permanently" : "완전 해제", null)
     ];
 }

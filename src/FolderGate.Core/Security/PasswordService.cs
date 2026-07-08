@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using FolderGate.Core.Localization;
 using FolderGate.Core.Models;
 
 namespace FolderGate.Core.Security;
@@ -69,12 +70,12 @@ public sealed class PasswordService
     {
         if (string.IsNullOrWhiteSpace(password))
         {
-            throw new ArgumentException("비밀번호를 입력해야 합니다.", nameof(password));
+            throw new ArgumentException(AppText.PasswordRequired, nameof(password));
         }
 
         if (password.Length < MinimumPasswordLength)
         {
-            throw new ArgumentException($"비밀번호는 최소 {MinimumPasswordLength}자 이상이어야 합니다.", nameof(password));
+            throw new ArgumentException(AppText.PasswordTooShort, nameof(password));
         }
     }
 }

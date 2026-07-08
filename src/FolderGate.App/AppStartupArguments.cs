@@ -1,3 +1,5 @@
+using FolderGate.Core.Localization;
+
 namespace FolderGate.App;
 
 public sealed record AppStartupArguments(string? UnlockPath, string? RootPath, bool ResumeTemporaryUnlocks)
@@ -36,7 +38,7 @@ public sealed record AppStartupArguments(string? UnlockPath, string? RootPath, b
                 continue;
             }
 
-            throw new ArgumentException($"알 수 없는 실행 인자입니다: {token}");
+            throw new ArgumentException(AppText.UnknownStartupArgument(token));
         }
 
         return new AppStartupArguments(unlockPath, rootPath, resumeTemporaryUnlocks);
@@ -46,7 +48,7 @@ public sealed record AppStartupArguments(string? UnlockPath, string? RootPath, b
     {
         if (index + 1 >= args.Count || args[index + 1].StartsWith("--", StringComparison.Ordinal))
         {
-            throw new ArgumentException($"{optionName}에는 값이 필요합니다.");
+            throw new ArgumentException(AppText.OptionRequiresValue(optionName));
         }
 
         index++;

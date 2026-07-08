@@ -1,3 +1,4 @@
+using FolderGate.Core.Localization;
 using FolderGate.Core.Security;
 
 namespace FolderGate.Core.Tests;
@@ -27,7 +28,7 @@ public sealed class PasswordServiceTests
 
         ArgumentException exception = Assert.ThrowsException<ArgumentException>(() => service.CreatePasswordRecord("abc"));
 
-        StringAssert.Contains(exception.Message, "최소 4자");
+        StringAssert.Contains(exception.Message, AppText.PasswordTooShort);
     }
 
     [TestMethod]

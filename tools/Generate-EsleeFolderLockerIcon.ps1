@@ -8,7 +8,7 @@ $ErrorActionPreference = "Stop"
 
 $projectRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..")).Path
 if ([string]::IsNullOrWhiteSpace($SourcePath)) {
-    $SourcePath = Join-Path $projectRoot "12cc6217-3fb5-4bf2-8821-ea6b53083df4.png"
+    $SourcePath = Join-Path $projectRoot "eslee-folder-lock.png"
 }
 
 if ([string]::IsNullOrWhiteSpace($OutputDirectory)) {
@@ -21,7 +21,7 @@ if (-not (Test-Path -LiteralPath $SourcePath)) {
 
 New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
 
-$sourceCopy = Join-Path $OutputDirectory "EsleeFolderLock-source.png"
+$sourceCopy = Join-Path $OutputDirectory "eslee-folder-locker-source.png"
 Copy-Item -LiteralPath $SourcePath -Destination $sourceCopy -Force
 
 Add-Type -AssemblyName System.Drawing
@@ -31,42 +31,41 @@ $pngFrames = New-Object System.Collections.Generic.List[object]
 
 $sourceImage = [System.Drawing.Image]::FromFile($sourceCopy)
 try {
-    $baseSide = [Math]::Min($sourceImage.Width, $sourceImage.Height)
-    $cropSide = [int][Math]::Round($baseSide * 0.72)
-    if ($cropSide -lt 1) {
-        throw "Invalid crop size for source image."
-    }
-
-    $cropX = [int][Math]::Round(($sourceImage.Width - $cropSide) / 2)
-    $remainingY = $sourceImage.Height - $cropSide
-    $cropY = [int][Math]::Round($remainingY * 0.12)
-    if ($cropX -lt 0) { $cropX = 0 }
-    if ($cropY -lt 0) { $cropY = 0 }
-    if ($cropX + $cropSide -gt $sourceImage.Width) { $cropX = $sourceImage.Width - $cropSide }
-    if ($cropY + $cropSide -gt $sourceImage.Height) { $cropY = $sourceImage.Height - $cropSide }
-
-    $cropRect = New-Object System.Drawing.Rectangle($cropX, $cropY, $cropSide, $cropSide)
-
     foreach ($size in $sizes) {
         $bitmap = New-Object System.Drawing.Bitmap($size, $size, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
         try {
             $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
             try {
-                $graphics.Clear([System.Drawing.Color]::FromArgb(255, 14, 22, 30))
+                $graphics.Clear([System.Drawing.Color]::Transparent)
                 $graphics.CompositingMode = [System.Drawing.Drawing2D.CompositingMode]::SourceOver
                 $graphics.CompositingQuality = [System.Drawing.Drawing2D.CompositingQuality]::HighQuality
                 $graphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
                 $graphics.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
                 $graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
 
-                $destRect = New-Object System.Drawing.Rectangle(0, 0, $size, $size)
-                $graphics.DrawImage($sourceImage, $destRect, $cropRect, [System.Drawing.GraphicsUnit]::Pixel)
+                $sourceRatio = $sourceImage.Width / $sourceImage.Height
+                $targetRatio = 1.0
+                if ($sourceRatio -gt $targetRatio) {
+                    $drawWidth = $size
+                    $drawHeight = [int][Math]::Round($size / $sourceRatio)
+                    $drawX = 0
+                    $drawY = [int][Math]::Round(($size - $drawHeight) / 2)
+                }
+                else {
+                    $drawHeight = $size
+                    $drawWidth = [int][Math]::Round($size * $sourceRatio)
+                    $drawX = [int][Math]::Round(($size - $drawWidth) / 2)
+                    $drawY = 0
+                }
+
+                $destRect = New-Object System.Drawing.Rectangle($drawX, $drawY, $drawWidth, $drawHeight)
+                $graphics.DrawImage($sourceImage, $destRect)
             }
             finally {
                 $graphics.Dispose()
             }
 
-            $pngPath = Join-Path $OutputDirectory "EsleeFolderLock-$size.png"
+            $pngPath = Join-Path $OutputDirectory "eslee-folder-locker-$size.png"
             $bitmap.Save($pngPath, [System.Drawing.Imaging.ImageFormat]::Png)
             $pngFrames.Add([pscustomobject]@{
                 Size = $size
@@ -83,7 +82,7 @@ finally {
     $sourceImage.Dispose()
 }
 
-$icoPath = Join-Path $OutputDirectory "EsleeFolderLock.ico"
+$icoPath = Join-Path $OutputDirectory "eslee-folder-locker.ico"
 $stream = [System.IO.File]::Create($icoPath)
 try {
     $writer = New-Object System.IO.BinaryWriter($stream)

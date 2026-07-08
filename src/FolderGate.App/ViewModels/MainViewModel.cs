@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.Principal;
 using FolderGate.App.Services;
+using FolderGate.Core.Localization;
 using FolderGate.Core.Models;
 using FolderGate.Core.Security;
 using FolderGate.Core.Storage;
@@ -24,7 +25,7 @@ public sealed class MainViewModel : ObservableObject
     private FolderGateConfig _config;
     private FolderItemViewModel? _selectedFolder;
     private LockMode _selectedMode = LockMode.Quick;
-    private string _statusMessage = "준비됨";
+    private string _statusMessage = AppText.Ready;
     private bool _isBusy;
     private string? _activeOperationId;
     private int _operationTotal;
@@ -231,13 +232,13 @@ public sealed class MainViewModel : ObservableObject
         PathValidationResult validation = _pathValidator.ValidateDirectory(selectedPath);
         if (!validation.IsValid || validation.NormalizedPath is null)
         {
-            _interaction.ShowError(validation.ErrorMessage ?? "이 폴더는 등록할 수 없습니다.");
+            _interaction.ShowError(validation.ErrorMessage ?? AppText.InvalidFolderGeneric);
             return;
         }
 
         if (_config.Password is null)
         {
-            string? newPassword = _interaction.AskNewPassword("비밀번호 설정", "처음 등록하는 폴더입니다. 잠금 해제에 사용할 비밀번호를 설정하세요. 비밀번호는 최소 4자 이상이어야 합니다.");
+            string? newPassword = _interaction.AskNewPassword(AppText.NewPasswordTitle, AppText.NewPasswordMessage);
             if (newPassword is null)
             {
                 return;
@@ -248,7 +249,7 @@ public sealed class MainViewModel : ObservableObject
 
         if (_config.Folders.Any(folder => WindowsPathComparer.AreSamePath(folder.Path, validation.NormalizedPath)))
         {
-            _interaction.ShowInfo("이미 등록된 폴더입니다.");
+            _interaction.ShowInfo(AppText.AlreadyRegisteredFolder);
             return;
         }
 
@@ -261,13 +262,13 @@ public sealed class MainViewModel : ObservableObject
             OwnerSid = WindowsIdentity.GetCurrent().User?.Value ?? string.Empty,
             HasReparsePointWarning = validation.Warnings.Count > 0,
             LastOperationUtc = DateTimeOffset.UtcNow,
-            LastResult = validation.Warnings.Count > 0 ? validation.Warnings[0] : "등록됨"
+            LastResult = validation.Warnings.Count > 0 ? validation.Warnings[0] : AppText.Registered
         };
 
         _config.Folders.Add(registeredFolder);
         _configStore.Save(_config);
         RefreshFolders(registeredFolder.Id);
-        StatusMessage = "폴더를 등록했습니다.";
+        StatusMessage = AppText.FolderRegistered;
         await Task.CompletedTask;
     }
 
@@ -280,11 +281,11 @@ public sealed class MainViewModel : ObservableObject
 
         if (SelectedFolder.Model.State is FolderLockState.Locked or FolderLockState.Working)
         {
-            _interaction.ShowError("잠긴 폴더는 먼저 잠금 해제한 뒤 제거하세요.");
+            _interaction.ShowError(AppText.RemoveLockedFolderError);
             return;
         }
 
-        if (!_interaction.Confirm("폴더 제거", "목록에서만 제거합니다. 실제 파일은 수정하지 않습니다. 계속할까요?"))
+        if (!_interaction.Confirm(AppText.RemoveFolderTitle, AppText.RemoveFolderMessage))
         {
             return;
         }
@@ -292,7 +293,7 @@ public sealed class MainViewModel : ObservableObject
         _config.Folders.RemoveAll(folder => string.Equals(folder.Id, SelectedFolder.Id, StringComparison.OrdinalIgnoreCase));
         _configStore.Save(_config);
         RefreshFolders();
-        StatusMessage = "폴더 등록을 제거했습니다.";
+        StatusMessage = AppText.FolderRegistrationRemoved;
     }
 
     private async Task LockSelectedFolderAsync()
@@ -303,18 +304,18 @@ public sealed class MainViewModel : ObservableObject
         }
 
         RegisteredFolder folder = SelectedFolder.Model;
-        string modeText = SelectedMode == LockMode.Quick ? "빠른 모드" : "강화 모드";
-        string childText = SelectedMode == LockMode.Quick ? "하위 항목 처리 없음" : "하위 폴더와 파일 ACL 재귀 처리";
+        string modeText = AppText.ModeName(SelectedMode);
+        string childText = SelectedMode == LockMode.Quick ? AppText.NoChildItems : AppText.RecursiveChildAcl;
         string recoveryToolPath = TryFindToolPath("FolderGate.RecoveryTool");
 
         string message =
-            $"실제 경로: {folder.Path}{Environment.NewLine}" +
-            $"모드: {modeText}{Environment.NewLine}" +
-            $"처리 범위: {childText}{Environment.NewLine}" +
-            $"이은성폴더잠금기 복구 도구: {recoveryToolPath}{Environment.NewLine}{Environment.NewLine}" +
-            "이 작업은 파일 내용을 암호화하거나 이동하지 않고 NTFS 권한만 변경합니다. 계속할까요?";
+            $"{AppText.ActualPathLabel}: {folder.Path}{Environment.NewLine}" +
+            $"{AppText.ModeLabel}: {modeText}{Environment.NewLine}" +
+            $"{AppText.ScopeLabel}: {childText}{Environment.NewLine}" +
+            $"{AppText.RecoveryToolName}: {recoveryToolPath}{Environment.NewLine}{Environment.NewLine}" +
+            AppText.LockConfirmTail;
 
-        if (!_interaction.Confirm("잠금 확인", message))
+        if (!_interaction.Confirm(AppText.LockConfirmTitle, message))
         {
             return;
         }
@@ -329,7 +330,7 @@ public sealed class MainViewModel : ObservableObject
             return;
         }
 
-        UnlockPasswordRequest? request = _interaction.AskUnlockPassword("잠금 해제", "비밀번호와 잠금 해제 유지 시간을 선택하세요.");
+        UnlockPasswordRequest? request = _interaction.AskUnlockPassword(AppText.UnlockTitle, AppText.UnlockPasswordMessage);
         if (request is null)
         {
             return;
@@ -337,7 +338,7 @@ public sealed class MainViewModel : ObservableObject
 
         if (!_passwordService.Verify(request.Password, _config.Password))
         {
-            _interaction.ShowError("비밀번호가 올바르지 않습니다. ACL 변경은 수행하지 않았습니다.");
+            _interaction.ShowError(AppText.InvalidPasswordNoAcl);
             return;
         }
 
@@ -367,7 +368,7 @@ public sealed class MainViewModel : ObservableObject
             IsBusy = true;
             _activeOperationId = operationId;
             ResetOperationProgress();
-            StatusMessage = "임시 잠금 해제를 위해 UAC 승격을 요청합니다.";
+            StatusMessage = AppText.TempUnlockRequestingUac;
             _startupRelockService.Install();
             process = _toolRunner.StartHelper("temporary-unlock", folder, operationId, duration: duration);
 
@@ -380,7 +381,7 @@ public sealed class MainViewModel : ObservableObject
                 if (refreshed is { State: FolderLockState.TemporarilyUnlocked })
                 {
                     RefreshFolders(folder.Id);
-                    StatusMessage = "임시 잠금 해제되었습니다. 지정 시간이 지나면 자동으로 다시 잠급니다.";
+                    StatusMessage = AppText.TempUnlockStarted;
                     ElevatedToolRunner.OpenExplorer(refreshed.Path);
                     return;
                 }
@@ -389,10 +390,12 @@ public sealed class MainViewModel : ObservableObject
                 {
                     int exitCode = process.ExitCode;
                     RefreshFolders(folder.Id);
-                    StatusMessage = $"임시 잠금 해제 프로세스가 종료되었습니다. 종료 코드: {exitCode}";
+                    StatusMessage = AppText.LanguageCode == "en"
+                        ? $"Temporary unlock process exited. Exit code: {exitCode}"
+                        : $"임시 잠금 해제 프로세스가 종료되었습니다. 종료 코드: {exitCode}";
                     if (exitCode != 0)
                     {
-                        _interaction.ShowError("임시 잠금 해제 작업이 실패했습니다. 로그와 상태를 확인하세요.");
+                        _interaction.ShowError(AppText.TempUnlockFailed);
                     }
 
                     return;
@@ -402,15 +405,15 @@ public sealed class MainViewModel : ObservableObject
             }
 
             RefreshFolders(folder.Id);
-            StatusMessage = "임시 잠금 해제 상태 확인 시간 초과";
-            _interaction.ShowError("임시 잠금 해제 상태를 확인하지 못했습니다. 폴더 상태를 확인하세요.");
+            StatusMessage = AppText.TempUnlockCheckTimeout;
+            _interaction.ShowError(AppText.TempUnlockCheckFailed);
         }
         catch (Exception ex)
         {
             _config = _configStore.Load();
             RefreshFolders(folder.Id);
             _interaction.ShowError(ex.Message);
-            StatusMessage = "임시 잠금 해제 실패";
+            StatusMessage = AppText.TempUnlockGeneralFailure;
         }
         finally
         {
@@ -425,7 +428,7 @@ public sealed class MainViewModel : ObservableObject
     {
         if (_config.Password is not null)
         {
-            string? oldPassword = _interaction.AskPassword("비밀번호 확인", "현재 비밀번호를 입력하세요.");
+            string? oldPassword = _interaction.AskPassword(AppText.CurrentPasswordTitle, AppText.CurrentPasswordMessage);
             if (oldPassword is null)
             {
                 return;
@@ -433,12 +436,12 @@ public sealed class MainViewModel : ObservableObject
 
             if (!_passwordService.Verify(oldPassword, _config.Password))
             {
-                _interaction.ShowError("비밀번호가 올바르지 않습니다.");
+                _interaction.ShowError(AppText.InvalidPasswordNoAcl);
                 return;
             }
         }
 
-        string? newPassword = _interaction.AskNewPassword("비밀번호 변경", "새 비밀번호를 입력하세요. 비밀번호는 최소 4자 이상이어야 합니다.");
+        string? newPassword = _interaction.AskNewPassword(AppText.ChangePasswordTitle, AppText.ChangePasswordMessage);
         if (newPassword is null)
         {
             return;
@@ -446,7 +449,7 @@ public sealed class MainViewModel : ObservableObject
 
         _config.Password = _passwordService.CreatePasswordRecord(newPassword);
         _configStore.Save(_config);
-        StatusMessage = "비밀번호를 변경했습니다.";
+        StatusMessage = AppText.PasswordChanged;
     }
 
     private async Task OpenRecoveryToolAsync()
@@ -454,16 +457,16 @@ public sealed class MainViewModel : ObservableObject
         try
         {
             IsBusy = true;
-            StatusMessage = "이은성폴더잠금기 복구 도구를 실행하는 중입니다.";
+            StatusMessage = AppText.RecoveryToolRunning;
             await _toolRunner.OpenRecoveryToolAsync().ConfigureAwait(true);
             _config = _configStore.Load();
             RefreshFolders(SelectedFolder?.Id);
-            StatusMessage = "이은성폴더잠금기 복구 도구 실행이 끝났습니다.";
+            StatusMessage = AppText.RecoveryToolFinished;
         }
         catch (Exception ex)
         {
             _interaction.ShowError(ex.Message);
-            StatusMessage = "이은성폴더잠금기 복구 도구 실행 실패";
+            StatusMessage = AppText.RecoveryToolFailed;
         }
         finally
         {
@@ -476,13 +479,13 @@ public sealed class MainViewModel : ObservableObject
         try
         {
             _explorerContextMenu.Install();
-            StatusMessage = "탐색기 우클릭 잠금 해제 메뉴를 등록했습니다.";
-            _interaction.ShowInfo("탐색기에서 폴더를 우클릭하면 '이은성폴더잠금기로 잠금 해제' 메뉴를 사용할 수 있습니다.");
+            StatusMessage = AppText.ExplorerMenuRegistered;
+            _interaction.ShowInfo(AppText.ExplorerMenuRegisteredInfo);
         }
         catch (Exception ex)
         {
             _interaction.ShowError(ex.Message);
-            StatusMessage = "탐색기 메뉴 등록 실패";
+            StatusMessage = AppText.ExplorerMenuRegisterFailed;
         }
     }
 
@@ -491,13 +494,13 @@ public sealed class MainViewModel : ObservableObject
         try
         {
             _explorerContextMenu.Uninstall();
-            StatusMessage = "탐색기 우클릭 잠금 해제 메뉴를 제거했습니다.";
-            _interaction.ShowInfo("탐색기 우클릭 잠금 해제 메뉴를 제거했습니다.");
+            StatusMessage = AppText.ExplorerMenuRemoved;
+            _interaction.ShowInfo(AppText.ExplorerMenuRemovedInfo);
         }
         catch (Exception ex)
         {
             _interaction.ShowError(ex.Message);
-            StatusMessage = "탐색기 메뉴 제거 실패";
+            StatusMessage = AppText.ExplorerMenuRemoveFailed;
         }
     }
 
@@ -509,7 +512,7 @@ public sealed class MainViewModel : ObservableObject
             IsBusy = true;
             _activeOperationId = operationId;
             ResetOperationProgress();
-            StatusMessage = "UAC 승격을 요청하고 작업을 실행합니다.";
+            StatusMessage = AppText.UacRunStatus;
             Task<int> helperTask = _toolRunner.RunHelperAsync(command, folder, operationId, mode);
             while (!helperTask.IsCompleted)
             {
@@ -524,12 +527,14 @@ public sealed class MainViewModel : ObservableObject
 
             if (exitCode == 0)
             {
-                StatusMessage = "작업이 완료되었습니다.";
+                StatusMessage = AppText.OperationCompleted;
             }
             else
             {
-                StatusMessage = $"작업이 실패했습니다. 종료 코드: {exitCode}";
-                _interaction.ShowError("작업이 실패했습니다. 로그와 상태를 확인하세요.");
+                StatusMessage = AppText.LanguageCode == "en"
+                    ? $"Operation failed. Exit code: {exitCode}"
+                    : $"작업이 실패했습니다. 종료 코드: {exitCode}";
+                _interaction.ShowError(AppText.OperationFailedCheckLogs);
             }
         }
         catch (Exception ex)
@@ -537,7 +542,7 @@ public sealed class MainViewModel : ObservableObject
             _config = _configStore.Load();
             RefreshFolders(folder.Id);
             _interaction.ShowError(ex.Message);
-            StatusMessage = "작업 실패";
+            StatusMessage = AppText.OperationFailed;
         }
         finally
         {
@@ -555,7 +560,7 @@ public sealed class MainViewModel : ObservableObject
         }
 
         _progressStore.RequestCancel(_activeOperationId);
-        StatusMessage = "취소를 요청했습니다. 이미 변경된 항목은 가능한 범위에서 원복합니다.";
+        StatusMessage = AppText.CancelRequested;
         RaiseCommandStates();
     }
 
@@ -567,7 +572,7 @@ public sealed class MainViewModel : ObservableObject
         OperationCurrentPath = "-";
         OperationElapsed = "00:00:00";
         OperationEta = "-";
-        OperationPhase = "시작 중";
+        OperationPhase = AppText.Starting;
         OperationProgressPercent = 0;
         IsProgressIndeterminate = true;
         RaiseCommandStates();
@@ -586,7 +591,7 @@ public sealed class MainViewModel : ObservableObject
         OperationCompleted = snapshot.CompletedCount;
         OperationFailed = snapshot.FailedCount;
         OperationCurrentPath = string.IsNullOrWhiteSpace(snapshot.CurrentPath) ? "-" : snapshot.CurrentPath;
-        OperationPhase = ToKoreanPhase(snapshot.Phase);
+        OperationPhase = AppText.FormatPhase(snapshot.Phase);
         IsProgressIndeterminate = snapshot.TotalCount <= 0;
         OperationProgressPercent = snapshot.TotalCount <= 0
             ? 0
@@ -627,22 +632,6 @@ public sealed class MainViewModel : ObservableObject
             : value.ToString(@"mm\:ss");
     }
 
-    private static string ToKoreanPhase(string phase)
-    {
-        return phase switch
-        {
-            "scan" => "항목 수 계산",
-            "backup" => "ACL 백업",
-            "lock" => "잠금 적용",
-            "unlock" => "잠금 해제",
-            "temporary-unlock-wait" => "임시 해제 대기",
-            "restore" => "복구",
-            "rollback" => "원복",
-            "starting" => "시작 중",
-            _ => phase
-        };
-    }
-
     private void RefreshFolders(string? selectedId = null)
     {
         _config = _configStore.Load();
@@ -670,7 +659,7 @@ public sealed class MainViewModel : ObservableObject
         }
         catch
         {
-            return "빌드 후 release 폴더 또는 도구 프로젝트 출력 폴더";
+            return AppText.ToolNotFoundHint;
         }
     }
 

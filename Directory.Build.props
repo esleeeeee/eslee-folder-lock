@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <AppLanguage Condition="'$(AppLanguage)' == ''">ko</AppLanguage>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AppLanguage)' == 'en'">
+    <DefineConstants>$(DefineConstants);APP_LANGUAGE_EN</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AppLanguage)' != 'en'">
+    <DefineConstants>$(DefineConstants);APP_LANGUAGE_KO</DefineConstants>
+  </PropertyGroup>
+</Project>
